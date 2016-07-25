@@ -85,8 +85,10 @@ class PokeIVWindow(tk.Frame):
         topFrame = tk.Frame(self.master_frame)
         self.config_button = tk.Button(topFrame, text="Config", command=self.show_config_window)
         self.refresh_button = tk.Button(topFrame, text="Refresh", command=self.refresh, width=4)
+        self.relog_button = tk.Button(topFrame, text="Relog", command=self.relog, width=4)
         self.config_button.pack(side="left", fill="both", expand=True)
         self.refresh_button.pack(side="right", fill="both")
+        self.relog_button.pack(side="right", fill="both")
         topFrame.pack(side="top", fill="both")
         
         self.list_windows = self.create_list_windows(self.master_frame)
@@ -410,4 +412,8 @@ class PokeIVWindow(tk.Frame):
         
     def refresh(self):
         self.data.update()
+        self.reset_windows()
+        
+    def relog(self):
+        self.data.login(self.config)
         self.reset_windows()

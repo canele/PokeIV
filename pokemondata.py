@@ -219,6 +219,13 @@ class PokemonData(dict):
         self["api"].call()
         self.update()
         
+    def login(self, config):
+        self["config"] = config
+        # login
+        if not self["api"].login(self["config"]["auth_service"], self["config"]["username"], self["config"]["password"]):
+            print("error logging in...")
+        self.update()
+        
     def update(self):
         items = self.parse_inventory(self.get_inventory())
         self.init_all(items["candy"],self["pokedex"],self["family"], self["cost"], self["config"], self["api"], items["pokemon"])
