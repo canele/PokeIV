@@ -1,0 +1,11 @@
+{
+  "username": "",
+  "password": "",
+  "verbose": "True",
+  "max_evolutions": "71", "_comment": "Maximum number of evolutions in one pass -- ensure 1800/evolution_delay >= max_evolutions",
+  "evolution_delay": "25", "_comment": "delay between evolutions in seconds",
+  "transfer_delay": "10", "_comment": "delay between transfers in seconds",
+  "auth_service": "google", "_comment": "('ptc' or 'google')",
+  "minimumIV": "80",  "_comment": "IV percentage--everything above is kept regardless of duplication",
+  "cp_override": "",  "_comment": "will keep pokemon that have CP equal to or above the given limit, regardless of IV"
+}
