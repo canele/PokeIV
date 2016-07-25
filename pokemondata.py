@@ -11,6 +11,10 @@ class PokemonData(dict):
         items = self.parse_inventory(self.get_inventory())
         self.init_all(items["candy"], pokedex, family, cost, config, api, items["pokemon"])
         
+    def update_inventory(self):
+        items = self.parse_inventory(self.get_inventory())
+        self.init_all(items["candy"], pokedex, family, cost, config, api, items["pokemon"])
+        
     #takes a list of pokemon from the API, 
     #a candies dict from the API,
     #a pokedex dict {number,name}, 
@@ -216,8 +220,8 @@ class PokemonData(dict):
         self.update()
         
     def update(self):
-        inventory = self["api"].getInventory()
-        self.init_all(inventory["candies"],self["pokedex"],self["family"], self["cost"],self["config"],self["api"],inventory["party"])
-        
+        items = self.parse_inventory(self.get_inventory())
+        self.init_all(items["candy"],self["pokedex"],self["family"], self["cost"], self["config"], self["api"], items["pokemon"])
+    
     def reconfigure(self, config, api=None):
         self.init_all(self["candy"],self["pokedex"],self["family"], self["cost"],config, api)
