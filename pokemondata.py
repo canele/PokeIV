@@ -235,7 +235,7 @@ class PokemonData(dict):
             self["api"].release_pokemon(pokemon_id=pokemon)
         else:
             self["api"].release_pokemon(pokemon_id=pokemon.id)
-        self["api"].call()
+        #self["api"].call()
         self.update()
 
     def evolve_pokemon(self, pokemon):
@@ -243,7 +243,7 @@ class PokemonData(dict):
             self["api"].evolve_pokemon(pokemon_id=pokemon)
         else:
             self["api"].evolve_pokemon(pokemon_id=pokemon.id)
-        self["api"].call()
+        #self["api"].call()
         self.update()
         
     def login(self):
