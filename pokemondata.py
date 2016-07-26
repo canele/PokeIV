@@ -55,6 +55,8 @@ class PokemonData(dict):
         return inventory
     
     def find_node(self, key, dictionary):
+        if not isinstance(dictionary, dict)
+            return
         for k, v in dictionary.items():
             if k == key:
                 yield v
