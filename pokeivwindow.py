@@ -13,6 +13,8 @@ class PokeIVWindow(tk.Frame):
         self.storage = tk.StringVar()
         self.pokecoins = tk.StringVar()
         self.stardust = tk.StringVar()
+        self.transfer_list = []
+        self.evolve_list = []
         self.logText.set("idle...")
         self.transfer_ids = []
         self.evolve_ids = []
@@ -139,9 +141,9 @@ class PokeIVWindow(tk.Frame):
         
         button_frame = tk.Frame(master)
         action_buttons = tk.Frame(button_frame)
-        self.evolve_button = tk.Button(action_buttons, text="Evolve", command=self.evolve_all_pokemon)
+        self.evolve_button = tk.Button(action_buttons, text="Evolve", command=self.evolve_action)
         self.evolve_button.pack(side="top", fill="both")
-        self.transfer_button = tk.Button(action_buttons, text="Transfer", command=self.transfer_all_pokemon)
+        self.transfer_button = tk.Button(action_buttons, text="Transfer", command=self.transfer_action)
         self.transfer_button.pack(side="bottom", fill="both")
         action_buttons.pack(side="left", fill="both", expand=True)
         self.cancel_button = tk.Button(button_frame, text="Cancel", command=self.cancel_actions, width=4, bg="#CD5C5C")
@@ -180,18 +182,15 @@ class PokeIVWindow(tk.Frame):
         self.best_window = self.create_window('Highest IV Pokemon', self.data["best"], top_windows)
         self.best_window.pack(side="left", fill="both")
         self.best_window.tree.bind('<Button-1>', self.best_select)
-        self.best_window.tree.config(selectmode="browse")
         self.other_window = self.create_evolve_count_window('Available evolutions ['+str(self.data["evolve_counts"]["total"])+' / '+str(self.config["max_evolutions"])+']', top_windows)
         self.other_window.pack(side="right", fill="both", expand=True)
         self.other_window.tree.config(selectmode="none")
         self.transfer_window = self.create_window('Transfer candidates', self.data["transfer"], btm_windows)
         self.transfer_window.pack(side="left", fill="both")
         self.transfer_window.tree.bind('<Button-1>', self.transfer_select)
-        self.transfer_window.tree.config(selectmode="browse")
         self.evolve_window = self.create_window('Evolution candidates', self.data["evolve"], btm_windows)
         self.evolve_window.pack(side="right", fill="both")
         self.evolve_window.tree.bind('<Button-1>', self.evolve_select)
-        self.evolve_window.tree.config(selectmode="browse")
     
         top_windows.pack(side="top", fill="both")
         btm_windows.pack(side="bottom", fill="both")
@@ -337,60 +336,72 @@ class PokeIVWindow(tk.Frame):
         else:
             self.log.configure(bg="#D0F0C0")
     
-    def pokemon_selected_action(self, action):
-        if action == "evolve" and self.evolve_window.tree.selection():
-            id = self.evolve_window.tree.item(self.evolve_window.tree.selection()[0], "values")[-1]
-            pokemon = self.data.get_pokemon_from_id(id)
-            self.evolve_pokemon(pokemon, False)
+    def pokemon_selected_evolve(self):
+        if self.evolve_window.tree.selection():
+            for sel in self.evolve_window.tree.selection():
+                id = self.evolve_window.tree.item(sel, "values")[-1]
+                pokemon = self.data.get_pokemon_from_id(id)
+                self.evolve_list.append(pokemon)
+            self.clear_trees()
+            self.evolve_pokemon()
             return True
-        elif action == "transfer":
-            if self.best_window.tree.selection():
-                id = self.best_window.tree.item(self.best_window.tree.selection()[0], "values")[-1]
+        return False
+            
+    def pokemon_selected_transfer(self):
+        if self.best_window.tree.selection():
+            for sel in self.best_window.tree.selection():
+                id = self.best_window.tree.item(sel, "values")[-1]
                 pokemon = self.data.get_pokemon_from_id(id)
-                self.transfer_pokemon(pokemon, False)
-                return True
-            elif self.transfer_window.tree.selection():
-                id = self.transfer_window.tree.item(self.transfer_window.tree.selection()[0], "values")[-1]
+                self.transfer_list.append(pokemon)
+            self.clear_trees()
+            self.transfer_pokemon()
+            return True
+        elif self.transfer_window.tree.selection():
+            for sel in self.transfer_window.tree.selection():
+                id = self.transfer_window.tree.item(sel, "values")[-1]
                 pokemon = self.data.get_pokemon_from_id(id)
-                self.transfer_pokemon(pokemon, False)
-                return True
-            elif self.evolve_window.tree.selection():
-                id = self.evolve_window.tree.item(self.evolve_window.tree.selection()[0], "values")[-1]
+                self.transfer_list.append(pokemon)
+            self.clear_trees()
+            self.transfer_pokemon()
+            return True
+        elif self.evolve_window.tree.selection():
+            for sel in self.evolve_window.tree.selection():
+                id = self.evolve_window.tree.item(sel, "values")[-1]
                 pokemon = self.data.get_pokemon_from_id(id)
-                self.transfer_pokemon(pokemon, False)
-                return True
+                self.transfer_list.append(pokemon)
+            self.clear_trees()
+            self.transfer_pokemon()
+            return True
         return False
     
-    def evolve_pokemon(self, pokemon, cont):
-        self.log_info('{0:<35} {1:<8} {2:<8.2%}'.format('evolving pokemon: '+str(pokemon.name),str(pokemon.cp),pokemon.ivPercent), "working")
-        self.disable_buttons()
-        self.evolve_ids.append(self.evolve_button.after(int(self.config["evolution_delay"])*1000, lambda: self.evolve(pokemon, cont)))
-        
-    def transfer_pokemon(self, pokemon, cont):
-        self.log_info('{0:<35} {1:<8} {2:<8.2%}'.format('transferring pokemon: '+str(pokemon.name),str(pokemon.cp),pokemon.ivPercent,), "working")
-        self.disable_buttons()
-        self.transfer_ids.append(self.transfer_button.after(int(self.config["transfer_delay"])*1000, lambda: self.transfer(pokemon, cont)))
-    
-    def evolve_all_pokemon(self):
+    def evolve_action(self):
         #if there was a pokemon selected from evolve list, evolve only that
-        if self.pokemon_selected_action("evolve"):
-            return
+        if not self.pokemon_selected_evolve():
+            self.evolve_list = self.data["evolve"][:]
+            self.evolve_pokemon()
         
-        if self.data["evolve"]:
-            p = self.data["evolve"][0]
-            self.evolve_pokemon(p, True)
+    def transfer_action(self):
+        #if there was a pokemon selected from any list, transfer only that
+        if not self.pokemon_selected_transfer():
+            self.transfer_list = self.data["transfer"][:]
+            self.transfer_pokemon()
+    
+    def evolve_pokemon(self):
+        if self.evolve_list:
+            p = self.evolve_list.pop(0)
+            self.log_info('{0:<35} {1:<8} {2:<8.2%}'.format('evolving pokemon: '+str(p.name),str(p.cp),p.ivPercent), "working")
+            self.disable_buttons()
+            self.evolve_ids.append(self.evolve_button.after(int(self.config["evolution_delay"])*1000, lambda: self.evolve(p)))
         else:
             self.log_info("idle...")
             self.reset_windows()
         
-    def transfer_all_pokemon(self):
-        #if there was a pokemon selected from any list, transfer only that
-        if self.pokemon_selected_action("transfer"):
-            return
-        
-        if self.data["transfer"]:
-            p = self.data["transfer"][0]
-            self.transfer_pokemon(p, True)
+    def transfer_pokemon(self):
+        if self.transfer_list:
+            p = self.transfer_list.pop(0)
+            self.log_info('{0:<35} {1:<8} {2:<8.2%}'.format('transferring pokemon: '+str(p.name),str(p.cp),p.ivPercent,), "working")
+            self.disable_buttons()
+            self.transfer_ids.append(self.transfer_button.after(int(self.config["transfer_delay"])*1000, lambda: self.transfer(p)))
         else:
             self.log_info("idle...")
             self.reset_windows()
@@ -403,21 +414,21 @@ class PokeIVWindow(tk.Frame):
         self.transfer_button.config(state="normal")
         self.evolve_button.config(state="normal")
         
-    def transfer(self, p, cont):
+    def transfer(self, p):
         self.data.transfer_pokemon(p)
-        self.enable_buttons()
-        if cont and self.data["transfer"]:
-            self.transfer_all_pokemon()
+        if self.transfer_list:
+            self.transfer_pokemon()
         else:
+            self.enable_buttons()
             self.log_info("idle...")
         self.reset_windows()
 
-    def evolve(self, p, cont):
+    def evolve(self, p):
         self.data.evolve_pokemon(p)
-        self.enable_buttons()
-        if cont and self.data["evolve"]:
-            self.evolve_all_pokemon()
+        if self.evolve_list:
+            self.evolve_pokemon()
         else:
+            self.enable_buttons()
             self.log_info("idle...")
         self.reset_windows()
     
@@ -428,6 +439,8 @@ class PokeIVWindow(tk.Frame):
         for id in self.evolve_ids[:]:
             self.evolve_button.after_cancel(id)
             self.evolve_ids.remove(id)
+        self.transfer_list = []
+        self.evolve_list = []
         self.enable_buttons()
         self.log_info("idle...")
         self.reset_windows()
@@ -439,3 +452,4 @@ class PokeIVWindow(tk.Frame):
     def relog(self):
         self.data.login()
         self.reset_windows()
+        self.set_player_info()
