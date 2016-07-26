@@ -145,8 +145,8 @@ class PokeIVWindow(tk.Frame):
         self.evolve_button.pack(side="top", fill="both")
         self.transfer_button = tk.Button(action_buttons, text="Transfer", command=self.transfer_action)
         self.transfer_button.pack(side="bottom", fill="both")
-        action_buttons.pack(side="left", fill="both", expand=True)
         self.cancel_button = tk.Button(button_frame, text="Cancel", command=self.cancel_actions, width=5, bg="#CD5C5C")
+        action_buttons.pack(side="left", fill="both", expand=True)
         self.cancel_button.pack(side="right", fill="y")
         button_frame.pack(side="bottom", fill="both")
         
