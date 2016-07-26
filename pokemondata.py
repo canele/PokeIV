@@ -126,6 +126,7 @@ class PokemonData(dict):
     def set_best(self):
         self["best"] = []
 
+        self["all"].sort(key=lambda x: x.iv, reverse=True)
         for p in self["all"]:
             #if there isn't a pokemon in best with the same number (name) as this one, add it
             if not any(x.number == p.number for x in self["best"]):
@@ -216,6 +217,9 @@ class PokemonData(dict):
         for p in self["all"]:
             #if it passes the minimum iv test
             if p.iv >= float(self["config"]["minimumIV"]):			
+                self["best"].append(p)
+            #if cp_override is set, check CP
+            elif self["config"]["cp_override"] is not None and int(self["config"]["cp_override"]) > 0 and int(p.cp) >= int(self["config"]["cp_override"]):
                 self["best"].append(p)
 
         self["best"].sort(key=lambda x: x.iv, reverse=True)
