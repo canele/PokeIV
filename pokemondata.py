@@ -1,36 +1,19 @@
 import json
 import time
 
-class PokemonData(dict):
+class PokemonData(dict):   
     #A dictionary for all of the key information used in pokeIV
     def __init__(self, pokedex, family, cost, config, api):
         self["family"] = family
         self["cost"] = cost
         self["pokedex"] = pokedex
         self["api"] = api
-        items = self.parse_inventory(self.get_inventory())
-        self.init_all(items["candy"], pokedex, family, cost, config, api, items["pokemon"])
-        
-    def update_inventory(self):
-        items = self.parse_inventory(self.get_inventory())
-        self.init_all(items["candy"], pokedex, family, cost, config, api, items["pokemon"])
-        
-    #takes a list of pokemon from the API, 
-    #a candies dict from the API,
-    #a pokedex dict {number,name}, 
-    #a family dict {number, family}, 
-    #an evolve cost dict {number, cost},
-    #and the configuration options
-    def init_all(self, candies, pokedex, family, cost, config, api=None, pokemon=None):
-        self["candy"] = candies
-        self["pokedex"] = pokedex
-        self["family"] = family
-        self["cost"] = cost
         self["config"] = config
-        if pokemon is not None:
-            self["all"] = sorted(pokemon, key=lambda x: x.iv, reverse=True)
-        if api is not None:
-            self["api"] = api
+        #updates inventory and player info
+        self.login()
+        self.init_info()
+     
+    def init_info(self):
         if self["config"]["hard_minimum"]:
             self.set_top()
         else:
@@ -41,9 +24,30 @@ class PokemonData(dict):
         self["extra"] = sorted(list(set(self["all"]) - set(self["best"])), key=lambda x: x.iv)
         self.set_transfer()
         self["other"] = sorted(list(set(self["extra"]) - set(self["transfer"])), key=lambda x: x.iv, reverse=True)
-        self.set_evolve()
+        self.set_evolve()    
         
+    def update_player_and_inventory(self):
+        # add inventory to rpc call
+        self["api"].get_inventory()
+        # add player to rpc call
+        self["api"].get_player()
+        response = self["api"].call()
+        self["player"] = self.parse_player(response)
+        items = self.parse_inventory(response)
+        self["candy"] = items["candy"]
+        self["all"] = items["pokemon"]
     
+    def update_inventory(self):
+        items = self.parse_inventory(self.get_inventory())
+        self["candy"] = items["candy"]
+        self["all"] = items["pokemon"]
+        
+    def update_player(self):
+        # execute the RPC call to get player info
+        self["api"].get_player()
+        player = self["api"].call()
+        self["player"] = self.parse_player(player)
+        
     def get_inventory(self):
         # execute the RPC call to get all pokemon and their stats
         self["api"].get_inventory()
@@ -59,8 +63,25 @@ class PokemonData(dict):
                     yield result
             elif isinstance(v, list):
                 for d in v:
+                    if not isinstance(d, dict):
+                        continue
                     for result in self.find_node(key, d):
                         yield result
+                        
+    def parse_player(self, player):
+        self["name"] = ""
+        self["storage"] = ""
+        self["pokecoins"] = ""
+        self["stardust"] = ""
+        
+        for node in self.find_node("player_data", player):
+            self["name"] = str(node["username"])
+            self["pokemon_storage"] = str(node["max_pokemon_storage"])
+            for c in node["currencies"]:
+                if c["name"] == "POKECOIN":
+                    self["pokecoins"] = str(c["amount"])
+                if c["name"] == "STARDUST":
+                    self["stardust"] = str(c["amount"])
     
     def parse_inventory(self, inventory):
         pokemon = []
@@ -219,16 +240,17 @@ class PokemonData(dict):
         self["api"].call()
         self.update()
         
-    def login(self, config):
-        self["config"] = config
+    def login(self):
         # login
         if not self["api"].login(self["config"]["auth_service"], self["config"]["username"], self["config"]["password"]):
             print("error logging in...")
-        self.update()
+        self.update_player_and_inventory()
+        self.init_info()
         
     def update(self):
-        items = self.parse_inventory(self.get_inventory())
-        self.init_all(items["candy"],self["pokedex"],self["family"], self["cost"], self["config"], self["api"], items["pokemon"])
+        self.update_inventory()
+        self.init_info()
     
-    def reconfigure(self, config, api=None):
-        self.init_all(self["candy"],self["pokedex"],self["family"], self["cost"],config, api)
+    def reconfigure(self, config):
+        self["config"] = config
+        self.init_info()

@@ -9,6 +9,10 @@ class PokeIVWindow(tk.Frame):
         self.data = data
         self.api = api
         self.logText = tk.StringVar()
+        self.name = tk.StringVar()
+        self.storage = tk.StringVar()
+        self.pokecoins = tk.StringVar()
+        self.stardust = tk.StringVar()
         self.logText.set("idle...")
         self.transfer_ids = []
         self.evolve_ids = []
@@ -80,12 +84,12 @@ class PokeIVWindow(tk.Frame):
         
 
     def create_widgets(self):
-        self.master_frame = tk.Frame(self)        
+        self.master_frame = tk.Frame(self)
         
         topFrame = tk.Frame(self.master_frame)
         self.config_button = tk.Button(topFrame, text="Config", command=self.show_config_window)
         self.refresh_button = tk.Button(topFrame, text="Refresh", command=self.refresh, width=4)
-        self.relog_button = tk.Button(topFrame, text="Relog", command=self.relog, width=4)
+        self.relog_button = tk.Button(topFrame, text="Login", command=self.relog, width=4)
         self.config_button.pack(side="left", fill="both", expand=True)
         self.refresh_button.pack(side="right", fill="both")
         self.relog_button.pack(side="right", fill="both")
@@ -144,11 +148,29 @@ class PokeIVWindow(tk.Frame):
         self.cancel_button.pack(side="right", fill="y")
         button_frame.pack(side="bottom", fill="both")
         
-        
-        self.tickboxes = self.create_checkbuttons(master)
-        self.tickboxes.pack(side="bottom", fill="both")
+        info_frame = tk.Frame(master)
+        self.tickboxes = self.create_checkbuttons(info_frame)
+        self.tickboxes.pack(side="left", fill="both", expand=True)
+        self.player_frame = self.create_player_info(info_frame)
+        self.player_frame.pack(side="right", fill="both")
+        info_frame.pack(side="bottom", fill="both")
         
         return right_windows
+    
+    def create_player_info(self, master):
+        frame = tk.Frame(master)
+        tk.Label(frame, textvariable = self.name, anchor="w", justify="left").pack(side="top", fill="both", padx=10)
+        tk.Label(frame, textvariable = self.storage, anchor="w", justify="left").pack(side="top", fill="both", padx=10)
+        tk.Label(frame, textvariable = self.pokecoins, anchor="w", justify="left").pack(side="top", fill="both", padx=10)
+        tk.Label(frame, textvariable = self.stardust, anchor="w", justify="left").pack(side="top", fill="both", padx=10)
+        self.set_player_info()
+        return frame
+        
+    def set_player_info(self):
+        self.name.set(self.data["name"])
+        self.storage.set(str(len(self.data["all"]))+" / "+self.data["pokemon_storage"]+"\tPokemon storage used")
+        self.pokecoins.set(self.data["pokecoins"]+"\tPokecoins")
+        self.stardust.set(self.data["stardust"]+"\tStardust")
     
     def create_list_windows(self, master):
         list_windows = tk.Frame(master)
@@ -415,5 +437,5 @@ class PokeIVWindow(tk.Frame):
         self.reset_windows()
         
     def relog(self):
-        self.data.login(self.config)
+        self.data.login()
         self.reset_windows()

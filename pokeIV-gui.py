@@ -125,10 +125,6 @@ def main():
     # instantiate pgoapi
     api = pgoapi.PGoApi()
     
-    # login
-    if not api.login(config["auth_service"], config["username"], config["password"]):
-        return
-    
     # -- dictionaries for pokedex, families, and evolution prices
     with open('names.tsv') as f:
         f.readline()
