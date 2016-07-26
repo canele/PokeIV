@@ -12,6 +12,8 @@ import argparse
 import getpass
 import csv
 import time
+
+from tkinter import ttk
 import tkinter as tk
 
 from collections import OrderedDict
@@ -141,6 +143,10 @@ def main():
     data = PokemonData(pokedex, family, cost, config, api)
        
     main_window = tk.Tk()
+    
+    main_window.style = ttk.Style()
+    main_window.style.theme_use("classic")
+    
     app = PokeIVWindow(config,data,api,master=main_window)
     app.mainloop()
     
