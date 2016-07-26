@@ -146,7 +146,7 @@ def print_evolve_candidates(data):
             elif id in data["needed_counts"] and id in data["unique_counts"]:
                 print('{0:<10} {1:^15} {2:^17} {3:^10}'.format(data["pokedex"][id],data["evolve_counts"][id],data["unique_counts"][id],data["needed_counts"][id]))
 
-def transfer_pokemon(data, session):
+def transfer_pokemon(data):
     if data["config"]["transfer"] and data["transfer"]:
         print('{0:<15} {1:^20} {2:>15}'.format('------------','Transferring','------------'))
         for p in data["transfer"][:]:
@@ -162,7 +162,7 @@ def transfer_pokemon(data, session):
                 data["all"].remove(p)
             time.sleep(int(data["config"]["transfer_delay"]))
 
-def evolve_pokemon(data, session):
+def evolve_pokemon(data):
     if data["config"]["evolve"] and data["evolve"]:
         for p in data["evolve"][:]:
             id = str(p.number)
@@ -226,10 +226,10 @@ def main():
         print_evolve_candidates(data)
     #------- transfer extra pokemon
     if data["config"]["transfer"] and data["transfer"]:
-        transfer_pokemon(data, session)
+        transfer_pokemon(data)
     #------- evolving t1 pokemon
     if data["config"]["evolve"] and data["evolve"]:
-        evolve_pokemon(data, session)
+        evolve_pokemon(data)
     
 if __name__ == '__main__':
     main()
