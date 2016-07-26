@@ -75,12 +75,14 @@ class PokemonData(dict):
         self["stardust"] = ""
         
         for node in self.find_node("player_data", player):
-            self["name"] = str(node["username"])
-            self["pokemon_storage"] = str(node["max_pokemon_storage"])
+            if "username" in node:
+                self["name"] = str(node["username"])
+            if "max_pokemon_storage" in node:
+                self["pokemon_storage"] = str(node["max_pokemon_storage"])
             for c in node["currencies"]:
-                if c["name"] == "POKECOIN":
+                if c["name"] == "POKECOIN" and "amount" in c:
                     self["pokecoins"] = str(c["amount"])
-                if c["name"] == "STARDUST":
+                elif c["name"] == "STARDUST" and "amount" in c:
                     self["stardust"] = str(c["amount"])
     
     def parse_inventory(self, inventory):
