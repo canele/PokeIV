@@ -90,8 +90,8 @@ class PokeIVWindow(tk.Frame):
         
         topFrame = tk.Frame(self.master_frame)
         self.config_button = tk.Button(topFrame, text="Config", command=self.show_config_window)
-        self.refresh_button = tk.Button(topFrame, text="Refresh", command=self.refresh, width=4)
-        self.relog_button = tk.Button(topFrame, text="Login", command=self.relog, width=4)
+        self.refresh_button = tk.Button(topFrame, text="Refresh", command=self.refresh, width=5)
+        self.relog_button = tk.Button(topFrame, text="Login", command=self.relog, width=5)
         self.config_button.pack(side="left", fill="both", expand=True)
         self.refresh_button.pack(side="right", fill="both")
         self.relog_button.pack(side="right", fill="both")
@@ -146,7 +146,7 @@ class PokeIVWindow(tk.Frame):
         self.transfer_button = tk.Button(action_buttons, text="Transfer", command=self.transfer_action)
         self.transfer_button.pack(side="bottom", fill="both")
         action_buttons.pack(side="left", fill="both", expand=True)
-        self.cancel_button = tk.Button(button_frame, text="Cancel", command=self.cancel_actions, width=4, bg="#CD5C5C")
+        self.cancel_button = tk.Button(button_frame, text="Cancel", command=self.cancel_actions, width=5, bg="#CD5C5C")
         self.cancel_button.pack(side="right", fill="y")
         button_frame.pack(side="bottom", fill="both")
         
@@ -169,10 +169,19 @@ class PokeIVWindow(tk.Frame):
         return frame
         
     def set_player_info(self):
-        self.name.set(self.data["name"])
-        self.storage.set(str(len(self.data["all"]))+" / "+self.data["pokemon_storage"]+"\tPokemon storage used")
-        self.pokecoins.set(self.data["pokecoins"]+"\tPokecoins")
-        self.stardust.set(self.data["stardust"]+"\tStardust")
+        if "name" in self.data and self.data["name"] is not None:
+            self.name.set(self.data["name"])
+        if "pokemon_storage" in self.data and self.data["pokemon_storage"] is not None:
+            self.storage.set(str(len(self.data["all"]))+" / "+self.data["pokemon_storage"]+"\tPokemon storage used")
+        if "pokecoins" in self.data and self.data["pokecoins"] is not None:
+            self.pokecoins.set(self.data["pokecoins"]+"\tPokecoins")
+        else:
+            self.pokecoins.set("0 \tPokecoins")
+        if "stardust" in self.data and self.data["stardust"] is not None:
+            self.stardust.set(self.data["stardust"]+"\tStardust")
+        else:
+            self.stardust.set("0 \tStardust")
+            
     
     def create_list_windows(self, master):
         list_windows = tk.Frame(master)
