@@ -77,15 +77,10 @@ class PokeIVWindow(tk.Frame):
         return
         
     def reset_windows(self):
-        #self.list_windows.pack_forget()
-        #self.list_windows = self.create_list_windows(self.master_frame)
-        #self.list_windows.pack(side="left", fill="both")
-        
         self.reset_tree_window(self.best_window.tree, self.data["best"])
         self.reset_tree_window_other(self.other_window.tree)
         self.reset_tree_window(self.transfer_window.tree, self.data["transfer"])
         self.reset_tree_window(self.evolve_window.tree, self.data["evolve"])
-        
 
     def create_widgets(self):
         self.master_frame = tk.Frame(self)
@@ -444,7 +439,7 @@ class PokeIVWindow(tk.Frame):
         else:
             self.enable_buttons()
             self.log_info("idle...")
-        self.reset_windows()
+        self.update_display()
         
     def transfer(self, p):
         self.data.transfer_pokemon(p)
@@ -453,7 +448,7 @@ class PokeIVWindow(tk.Frame):
         else:
             self.enable_buttons()
             self.log_info("idle...")
-        self.reset_windows()
+        self.update_display()
     
     def rename(self, p):
         self.data.rename_pokemon(p)
@@ -462,7 +457,7 @@ class PokeIVWindow(tk.Frame):
         else:
             self.enable_buttons()
             self.log_info("idle...")
-        self.reset_windows()
+        self.update_display()
         
     def cancel_actions(self):
         for id in self.transfer_ids[:]:
@@ -479,13 +474,16 @@ class PokeIVWindow(tk.Frame):
         self.rename_list = []
         self.enable_buttons()
         self.log_info("idle...")
+        self.update_display()
+    
+    def update_display(self):
         self.reset_windows()
-        
+        self.set_player_info()
+            
     def refresh(self):
         self.data.update()
-        self.reset_windows()
+        self.update_display()
         
     def relog(self):
         self.data.login()
-        self.reset_windows()
-        self.set_player_info()
+        self.update_display()

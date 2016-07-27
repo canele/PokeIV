@@ -281,7 +281,7 @@ class PokemonData(dict):
         self.init_info()
         
     def update(self):
-        self.update_inventory()
+        self.update_player_and_inventory()
         self.init_info()
     
     def reconfigure(self, config):
