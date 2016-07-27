@@ -247,6 +247,8 @@ class PokemonData(dict):
             return None
         vals = []
         for item in items[1:]:
+            if item == "pokemon":
+                vals.append(str(pokemon.name))
             if item == "atk":
                 vals.append(str(pokemon.attack))
             elif item == "def":
@@ -255,7 +257,7 @@ class PokemonData(dict):
                 vals.append(str(pokemon.stamina))
             elif re.split("\.", item)[0] == "iv" and re.split("\.", item)[1].isdigit():
                 vals.append(str("{0:."+re.split("\.",item)[1]+"f}").format(float(pokemon.iv)))
-        return  str(items[0]).join(vals)  
+        return  str(items[0]).join(vals)[:12]  
     
     def transfer_pokemon(self, pokemon):
         self["api"].release_pokemon(pokemon_id=self.get_id(pokemon))

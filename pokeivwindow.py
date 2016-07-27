@@ -415,7 +415,7 @@ class PokeIVWindow(tk.Frame):
     def rename_pokemon(self):
         if self.rename_list:
             p = self.rename_list.pop(0)
-            self.log_info('{0:<35} {1:<8} {2:<8.2%}'.format('renaming pokemon: '+str(p.name),str(p.cp),p.ivPercent,), "working")
+            self.log_info('{0:<25} {1:<20}'.format('renaming pokemon: '+str(p.name)+':',self.data.get_new_nickname(p)), "working")
             self.disable_buttons()
             self.rename_ids.append(self.rename_button.after(int(self.config["rename_delay"])*1000, lambda: self.rename(p)))
         else:

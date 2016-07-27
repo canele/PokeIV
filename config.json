@@ -30,5 +30,7 @@
   
   "rename_format": "{-}{atk}{def}{sta}{iv.2}",	"_comment":"renaming format: first item is the delimiter--there must be one.",
 												"_comment":"{iv.2} specifies that it will use 2 decimal places. The number following the period is mandatory (can be 0)",
-												"_comment":"example: 13 atk, 13 def, 14 sta, 88.8888.. iv with default format becomes ==> '13-13-14-88.88' "
+												"_comment":"example: 13 atk, 13 def, 14 sta, 88.8888.. iv with default format becomes ==> '13-13-14-88.88' ",
+												"_comment":"{pokemon} is also a vailable and will display the type of pokemon.",
+												"_comment":"Name limits are 12 characters in length and WILL be truncated to fit--look at the action bar at the bottom of the UI"
 }
