@@ -88,13 +88,13 @@ def init_config():
             if str(load[key]) == "True":
                 config.__dict__[key] = True
     
-    if config.__dict__["password"] is None:
-        logging.info("Secure Password Input (if there is no password prompt, use --password <pw>):")
-        config.__dict__["password"] = getpass.getpass()
-
-    if config.auth_service not in ['ptc', 'google']:
-        logging.error("Invalid Auth service specified! ('ptc' or 'google')")
-        return None
+    #if config.__dict__["password"] is None:
+    #    logging.info("Secure Password Input (if there is no password prompt, use --password <pw>):")
+    #    config.__dict__["password"] = getpass.getpass()    
+    #
+    #if config.auth_service not in ['ptc', 'google']:
+    #    logging.error("Invalid Auth service specified! ('ptc' or 'google')")
+    #    return None
         
     if config.__dict__["minimumIV"] is None:
         config.__dict__["minimumIV"] = "101"
@@ -123,14 +123,63 @@ def init_config():
 def main():
     setupLogger()
     log.debug('Logger set up')
-
+    
+    #-- initialize config
     config = init_config()
     if not config:
         return
-
-    # instantiate pgoapi
-    api = pgoapi.PGoApi()
+        
+    if config["password"] is None or config["username"] is None or config["auth_service"] not in ['ptc', 'google']:
+        login = tk.Tk()
+        login.wm_title("Pokemon Go Login")
+        login.style = ttk.Style()
+        login.style.theme_use("classic")
+        app = tk.Frame(login)
+        
+        auth = tk.StringVar()
+        username = tk.StringVar()
+        password = tk.StringVar()
+        
+        def _log_in():
+            config["password"] = password.get()
+            config["username"] = username.get()
+            config["auth_service"] = auth.get()
+            login.destroy()
+            start(config)
+        
+        if "auth_service" in config and config["auth_service"] == "google":
+            auth.set("google")
+        elif "auth_service" in config and config["auth_service"] == "ptc":
+            auth.set("ptc")
+        else:
+            auth.set("google")
+            
+        buttons = tk.Frame(app)
+        tk.Radiobutton(buttons, text="Google Login", variable=auth, value="google").pack(side="left", fill="both")
+        tk.Radiobutton(buttons, text="PTC Login", variable=auth, value="ptc").pack(side="right", fill="both")
+        buttons.pack(side="top")
+        
+        if config["username"] is not None:
+            username.set(config["username"])
+        if config["password"] is not None:
+            password.set(config["password"])
+        user_frame = tk.Frame(app)
+        tk.Label(user_frame, text="Username: ", width=10).pack(side="left", fill="both")
+        tk.Entry(user_frame, textvariable=username).pack(side="right", fill="both", expand=True)
+        pass_frame = tk.Frame(app)
+        tk.Label(pass_frame, text="Password: ", width=10).pack(side="left", fill="both")
+        tk.Entry(pass_frame, textvariable=password).pack(side="right", fill="both", expand=True)
+        user_frame.pack(side="top", fill="both", expand=True)
+        pass_frame.pack(side="top", fill="both", expand=True)
+        
+        tk.Button(app, text="Login", command = lambda: _log_in()).pack(side="bottom", fill="both")
+        
+        app.pack()
+        app.mainloop()
+    else:
+        start()
     
+def start(config):
     # -- dictionaries for pokedex, families, and evolution prices
     with open('names.tsv') as f:
         f.readline()
@@ -143,9 +192,12 @@ def main():
     with open('evolves.tsv') as f:
         f.readline()
         cost = dict(csv.reader(f, delimiter='\t'))
+        
+    # instantiate pgoapi
+    api = pgoapi.PGoApi()
     
     data = PokemonData(pokedex, family, cost, config, api)
-       
+    
     main_window = tk.Tk()
     
     main_window.style = ttk.Style()
