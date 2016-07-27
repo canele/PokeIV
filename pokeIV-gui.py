@@ -74,6 +74,7 @@ def init_config():
     parser.add_argument("-f", "--force", help="forces all pokemon not passing the IV threshold to be transfer candidates regardless of evolution", action="store_true")
     parser.add_argument("-rf", "--rename_format", help="The pokemon renaming format. See config comments")
     parser.add_argument("-eq", "--equation", help="Equation to use for IV calculation--see config file for details")
+    parser.add_argument("-dn", "--display_nickname", help="Display nicknames instead of pokemon type", action="store_true")
     config = parser.parse_args()
     
     # Passed in arguments shoud trump

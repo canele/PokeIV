@@ -334,7 +334,10 @@ class PokeIVWindow(tk.Frame):
                 self.evolve_window.tree.selection_remove(sel)
         
     def get_info(self,pokemon):
-        return (str(pokemon.name),str(pokemon.attack),str(pokemon.defense),str(pokemon.stamina),str(pokemon.cp),str('{0:>2.2%}').format(pokemon.ivPercent))
+        if self.config["display_nickname"]:
+            return (str(pokemon.nickname),str(pokemon.attack),str(pokemon.defense),str(pokemon.stamina),str(pokemon.cp),str('{0:>2.2%}').format(pokemon.ivPercent))
+        else:
+            return (str(pokemon.name),str(pokemon.attack),str(pokemon.defense),str(pokemon.stamina),str(pokemon.cp),str('{0:>2.2%}').format(pokemon.ivPercent))
         
     def get_columns(self):
         return {'verbose': ('POKEMON','ATK','DEF','STA','CP','IV'),

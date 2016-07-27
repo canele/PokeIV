@@ -28,6 +28,8 @@
 								
   "force": "False", 			"_comment": "forces all pokemon not passing the IV threshold to be transfer candidates regardless of evolution",
   
+  "display_nickname": "False",	"_comment": "Displays the pokemon's nickname instead of the pokemon type. There's a checkbox that makes this more useful",
+  
   "rename_format": "{-}{atk}{def}{sta}{iv.2}",	"_comment":"renaming format: first item is the delimiter--there must be one.",
 												"_comment":"{iv.2} specifies that it will use 2 decimal places. The number following the period is mandatory (can be 0)",
 												"_comment":"example: 13 atk, 13 def, 14 sta, 88.8888.. iv with default format becomes ==> '13-13-14-88.88' ",

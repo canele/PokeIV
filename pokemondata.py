@@ -112,6 +112,7 @@ class PokemonData(dict):
             pok = type('',(),{})
             pok.id = node["id"]
             pok.name = self["pokedex"][str(node["pokemon_id"])]
+            pok.nickname = node["nickname"] if "nickname" in node else ""
             pok.family = self["family"][str(node["pokemon_id"])]
             pok.number = node["pokemon_id"]
             pok.stamina = node["individual_stamina"] if "individual_stamina" in node else 0
