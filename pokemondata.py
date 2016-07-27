@@ -88,9 +88,25 @@ class PokemonData(dict):
                 elif c["name"] == "STARDUST" and "amount" in c:
                     self["stardust"] = str(c["amount"])
     
+    
+    
     def parse_inventory(self, inventory):
         pokemon = []
         candy = []
+        
+        def _calculate_iv(pok):
+            if "equation" in self["config"] and self["config"]["equation"] is not None:
+                eq = self["config"]["equation"]
+                eq = eq.replace("{atk}", str(pok.attack))
+                eq = eq.replace("{def}", str(pok.defense))
+                eq = eq.replace("{sta}", str(pok.stamina))
+                try:
+                    iv = eval(eq)
+                    return iv*100
+                except Exception:
+                    return ((pok.stamina + pok.attack + pok.defense) / float(45))*100
+            else:
+                return ((pok.stamina + pok.attack + pok.defense) / float(45))*100
         
         def _add_pokemon(node):
             pok = type('',(),{})
@@ -101,7 +117,7 @@ class PokemonData(dict):
             pok.stamina = node["individual_stamina"] if "individual_stamina" in node else 0
             pok.attack = node["individual_attack"] if "individual_attack" in node else 0
             pok.defense = node["individual_defense"] if "individual_defense" in node else 0
-            pok.iv = ((pok.stamina + pok.attack + pok.defense) / float(45))*100
+            pok.iv = _calculate_iv(pok)
             pok.ivPercent = pok.iv/100
             pok.cp = node["cp"]
             if int(self["cost"][str(pok.number)]) > 0:
