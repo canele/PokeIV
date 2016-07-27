@@ -1,17 +1,34 @@
 {
   "auth_service": "google", 	"_comment": "('ptc' or 'google')",
+  
   "username": "",
+  
   "password": "",
-  "location": "", 				"_comment": "name of a location (ex. 'Times Square, New York'",
+  
   "minimumIV": "80",  			"_comment": "IV percentage--everything above is kept regardless of duplication",
+  
   "hard_minimum": "False", 		"_comment": "transfer candidates will be selected if they are below minimumIV (will transfer unique pokemon)",
+  
   "max_evolutions": "71", 		"_comment": "Maximum number of evolutions in one pass -- ensure 1800/evolution_delay >= max_evolutions",
+  
   "evolution_delay": "25", 		"_comment": "delay between evolutions in seconds",
+  
   "transfer_delay": "10", 		"_comment": "delay between transfers in seconds",
+  
+  "rename_delay": "5", 			"_comment": "delay between renames in seconds",
+  
   "cp_override": "",  			"_comment": "will keep pokemon that have CP equal to or above the given limit, regardless of IV",
+  
   "verbose": "True", 			"_comment": "displays additional information about each pokemon",
+  
   "white_list": "", 			"_comment": "list of the only pokemon to transfer and evolve by ID or name (ex: -wl 1 = -wl bulbasaur)",
+  
   "black_list": "", 			"_comment": "list of the pokemon not to transfer and evolve by ID or name (ex: -bl 1 = -bl bulbasaur)",
 								"_comment": "format: comma delimited list, no spaces: 'eevee,weedle' ",
-  "force": "False", 			"_comment": "forces all pokemon not passing the IV threshold to be transfer candidates regardless of evolution"
+								
+  "force": "False", 			"_comment": "forces all pokemon not passing the IV threshold to be transfer candidates regardless of evolution",
+  
+  "rename_format": "{-}{atk}{def}{sta}{iv.2}",	"_comment":"renaming format: first item is the delimiter--there must be one.",
+												"_comment":"{iv.2} specifies that it will use 2 decimal places. The number following the period is mandatory (can be 0)",
+												"_comment":"example: 13 atk, 13 def, 14 sta, 88.8888.. iv with default format becomes ==> '13-13-14-88.88' "
 }

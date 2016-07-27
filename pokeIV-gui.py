@@ -64,6 +64,7 @@ def init_config():
     parser.add_argument("-me", "--max_evolutions", help="Maximum number of evolutions in one pass")
     parser.add_argument("-ed", "--evolution_delay", help="delay between evolutions in seconds")
     parser.add_argument("-td", "--transfer_delay", help="delay between transfers in seconds")
+    parser.add_argument("-rd", "--rename_delay", help="delay between renames in seconds")
     parser.add_argument("-hm", "--hard_minimum", help="transfer candidates will be selected if they are below minimumIV (will transfer unique pokemon)", action="store_true")
     parser.add_argument("-cp", "--cp_override", help="will keep pokemon that have CP equal to or above the given limit, regardless of IV")
     parser.add_argument("-v", "--verbose", help="displays additional information about each pokemon", action="store_true")
@@ -71,6 +72,7 @@ def init_config():
     parser.add_argument("-wl", "--white_list", help="list of the only pokemon to transfer and evolve by ID or name (ex: -wl 1 = -wl bulbasaur)", action="append")
     parser.add_argument("-bl", "--black_list", help="list of the pokemon not to transfer and evolve by ID or name (ex: -bl 1 = -bl bulbasaur)", action="append")
     parser.add_argument("-f", "--force", help="forces all pokemon not passing the IV threshold to be transfer candidates regardless of evolution", action="store_true")
+    parser.add_argument("-rf", "--rename_format", help="The pokemon renaming format. See config comments")
     config = parser.parse_args()
     
     # Passed in arguments shoud trump

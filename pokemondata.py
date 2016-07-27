@@ -1,3 +1,4 @@
+import re
 import json
 import time
 
@@ -226,25 +227,49 @@ class PokemonData(dict):
 
         self["best"].sort(key=lambda x: x.iv, reverse=True)
     
-    def get_pokemon_from_id(self, id):
-        for p in self["all"]:
-            if int(p.id) == int(id):
-                return p
-        return None
+    def get_id(self, pokemon):
+        if isinstance(pokemon, str) or isinstance(pokemon, int): #if it's an id
+            return int(pokemon)
+        else: #otherwise it's a pokemon
+            return int(pokemon.id)
+            
+    def get_pokemon(self, pokemon):
+        if isinstance(pokemon, str) or isinstance(pokemon, int): #if it's an id
+            for p in self["all"]:
+                if int(p.id) == int(pokemon):
+                    return p
+        else: #otherwise it's a pokemon
+            return pokemon
+          
+    def get_new_nickname(self, pokemon):
+        items = list(filter(None, re.split("\{|\}\{|\}", self["config"]["rename_format"])))
+        if len(items) <= 1: #either only a delimeter or malformed
+            return None
+        vals = []
+        for item in items[1:]:
+            if item == "atk":
+                vals.append(str(pokemon.attack))
+            elif item == "def":
+                vals.append(str(pokemon.defense))
+            elif item == "sta":
+                vals.append(str(pokemon.stamina))
+            elif re.split("\.", item)[0] == "iv" and re.split("\.", item)[1].isdigit():
+                vals.append(str("{0:."+re.split("\.",item)[1]+"f}").format(float(pokemon.iv)))
+        return  str(items[0]).join(vals)  
     
     def transfer_pokemon(self, pokemon):
-        if isinstance(pokemon, str) or isinstance(pokemon, int):
-            self["api"].release_pokemon(pokemon_id=pokemon)
-        else:
-            self["api"].release_pokemon(pokemon_id=pokemon.id)
+        self["api"].release_pokemon(pokemon_id=self.get_id(pokemon))
         #self["api"].call()
         self.update()
 
     def evolve_pokemon(self, pokemon):
-        if isinstance(pokemon, str) or isinstance(pokemon, int):
-            self["api"].evolve_pokemon(pokemon_id=pokemon)
-        else:
-            self["api"].evolve_pokemon(pokemon_id=pokemon.id)
+        self["api"].evolve_pokemon(pokemon_id=self.get_id(pokemon))
+        #self["api"].call()
+        self.update()
+    
+    def rename_pokemon(self, pokemon):
+        name = self.get_new_nickname(pokemon)
+        self.data["api"].nickname_pokemon(pokemon_id=self.get_id(pokemon),nickname=str(name))
         #self["api"].call()
         self.update()
         
