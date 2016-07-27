@@ -1,6 +1,7 @@
 import re
 import json
 import time
+from ast import literal_eval
 
 class PokemonData(dict):   
     #A dictionary for all of the key information used in pokeIV
@@ -101,7 +102,7 @@ class PokemonData(dict):
                 eq = eq.replace("{def}", str(pok.defense))
                 eq = eq.replace("{sta}", str(pok.stamina))
                 try:
-                    iv = eval(eq)
+                    iv = literal_eval(eq)
                     return iv*100
                 except Exception:
                     return ((pok.stamina + pok.attack + pok.defense) / float(45))*100
