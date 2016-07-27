@@ -177,7 +177,7 @@ def main():
         app.pack()
         app.mainloop()
     else:
-        start()
+        start(config)
     
 def start(config):
     # -- dictionaries for pokedex, families, and evolution prices
