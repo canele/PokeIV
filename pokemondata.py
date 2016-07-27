@@ -287,7 +287,7 @@ class PokemonData(dict):
     
     def rename_pokemon(self, pokemon):
         name = self.get_new_nickname(pokemon)
-        self.data["api"].nickname_pokemon(pokemon_id=self.get_id(pokemon),nickname=str(name))
+        self["api"].nickname_pokemon(pokemon_id=self.get_id(pokemon),nickname=str(name))
         #self["api"].call()
         self.update()
         
