@@ -203,7 +203,7 @@ def main():
         f.readline()
         cost = dict(csv.reader(f, delimiter='\t'))
     
-    data = PokemonData(pokedex, family, cost, config, api)
+    data = PokemonData(pokedex, family, cost, config, api, login=True)
     
     if len(data["all"]) == 0:
         print('You have no pokemon...')
