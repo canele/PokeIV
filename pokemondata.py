@@ -128,14 +128,15 @@ class PokemonData(dict):
         
         def _add_candy(node):
             if "candy" in node:
-                candy.append((str(node["family_id"]),node["candy"]))
-            else:
-                candy.append((str(node["family_id"]),0))
+                if "candy" in node["candy"]:
+                    candy.append((str(node["candy"]["family_id"]),node["candy"]["candy"]))
+                else:
+                    candy.append((str(node["candy"]["family_id"]),0))
         
         for node in self.find_node("pokemon_data", inventory):
             if 'is_egg' not in node:
                 _add_pokemon(node)
-        for node in self.find_node("pokemon_family", inventory):
+        for node in self.find_node("inventory_item_data", inventory):
             _add_candy(node)
             
         candy = dict(candy)
