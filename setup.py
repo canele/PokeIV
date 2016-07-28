@@ -33,23 +33,17 @@ setup(data_files=mydata,
       zipfile = None,
 	  options= {
         "py2exe":{
-		    "packages": ['s2sphere',
-						 'six',
-						 'gpsoauth',
-						 'geopy',
-						 'requests',
-						 'Cryptodome',
-			             'POGOProtos',
-			             'POGOProtos.Networking.Requests',
-                         'POGOProtos.Networking.Requests.Messages_pb2',
-                         'POGOProtos.Networking.Responses_pb2']
-			,'bundle_files': 1
-			,'compressed': True
+            "packages": ['s2sphere',
+                        'six',
+                        'gpsoauth',
+                        'geopy',
+                        'requests',
+                        'Cryptodome',
+                        'POGOProtos',
+                        'POGOProtos.Networking.Requests',
+                        'POGOProtos.Networking.Requests.Messages_pb2',
+                        'POGOProtos.Networking.Responses_pb2']
+            ,'bundle_files': 1
+            ,'compressed': True
 		}
      })
-
-#cleanup extra pyds that we already copied earlier
-for folder,folder_name,files in os.walk(os.getcwd()):
-    for file in files:
-        if file.split(".")[0] == "Cryptodome":
-            os.remove(os.path.join(folder,file))
