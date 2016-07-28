@@ -490,7 +490,7 @@ class PokeIVWindow(tk.Canvas):
         if self.evolve_list:
             p = self.evolve_list.pop(0)
             self.log_info('{0:<35} {1:<8} {2:<8.2%}'.format('evolving pokemon: '+str(p.name),str(p.cp),p.ivPercent), "working")
-            self.disable_buttons()
+            self.disable_action_buttons()
             self.evolve_ids.append(self.evolve_button.after(int(self.config["evolution_delay"])*1000, lambda: self.evolve(p)))
         else:
             self.log_info("idle...")
@@ -500,7 +500,7 @@ class PokeIVWindow(tk.Canvas):
         if self.transfer_list:
             p = self.transfer_list.pop(0)
             self.log_info('{0:<35} {1:<8} {2:<8.2%}'.format('transferring pokemon: '+str(p.name),str(p.cp),p.ivPercent,), "working")
-            self.disable_buttons()
+            self.disable_action_buttons()
             self.transfer_ids.append(self.transfer_button.after(int(self.config["transfer_delay"])*1000, lambda: self.transfer(p)))
         else:
             self.log_info("idle...")
@@ -510,7 +510,7 @@ class PokeIVWindow(tk.Canvas):
         if self.rename_list:
             p = self.rename_list.pop(0)
             self.log_info('{0:<25} {1:<20}'.format('renaming pokemon: '+str(p.name)+':',self.data.get_new_nickname(p)), "working")
-            self.disable_buttons()
+            self.disable_action_buttons()
             self.rename_ids.append(self.rename_button.after(int(self.config["rename_delay"])*1000, lambda: self.rename(p)))
         else:
             self.log_info("idle...")
@@ -550,7 +550,7 @@ class PokeIVWindow(tk.Canvas):
         if self.evolve_list:
             self.evolve_pokemon()
         else:
-            self.enable_buttons()
+            self.enable_action_buttons()
             self.log_info("idle...")
         
     def transfer(self, p):
@@ -559,7 +559,7 @@ class PokeIVWindow(tk.Canvas):
         if self.transfer_list:
             self.transfer_pokemon()
         else:
-            self.enable_buttons()
+            self.enable_action_buttons()
             self.log_info("idle...")
     
     def rename(self, p):
@@ -568,7 +568,7 @@ class PokeIVWindow(tk.Canvas):
         if self.rename_list:
             self.rename_pokemon()
         else:
-            self.enable_buttons()
+            self.enable_action_buttons()
             self.log_info("idle...")
         
     def cancel_actions(self):
@@ -584,7 +584,7 @@ class PokeIVWindow(tk.Canvas):
         self.transfer_list = []
         self.evolve_list = []
         self.rename_list = []
-        self.enable_buttons()
+        self.enable_all_buttons()
         self.log_info("idle...")
         self.update_display()
     
