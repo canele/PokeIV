@@ -140,7 +140,10 @@ class PokemonData(dict):
             
         candy = dict(candy)
         for p in pokemon:
-            p.candy = candy[str(p.family)]
+            if str(p.family) in candy:
+                p.candy = candy[str(p.family)]
+            else:
+                p.candy = 0
         
         return {"pokemon":pokemon, "candy":candy}
 

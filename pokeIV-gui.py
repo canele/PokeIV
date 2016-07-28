@@ -21,7 +21,10 @@ from pokemondata import PokemonData
 from pokeivwindow import PokeIVWindow
 
 # add directory of this file to PATH, so that the package will be found
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
+try:
+    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+except NameError:
+    sys.path.append(os.path.dirname(os.path.realpath(sys.argv[0])))
 
 # import Pokemon Go API lib
 from pgoapi import pgoapi
