@@ -57,8 +57,8 @@ def init_config():
     
     # Read passed in Arguments
     required = lambda x: not x in load
-    parser.add_argument("-a", "--auth_service", help="Auth Service ('ptc' or 'google')",required=required("auth_service"))
-    parser.add_argument("-u", "--username", help="Username", required=required("username"))
+    parser.add_argument("-a", "--auth_service", help="Auth Service ('ptc' or 'google')")
+    parser.add_argument("-u", "--username", help="Username")
     parser.add_argument("-p", "--password", help="Password")
     parser.add_argument("-m", "--minimumIV", help="All pokemon equal to or above this IV value are kept regardless of duplicates")
     parser.add_argument("-me", "--max_evolutions", help="Maximum number of evolutions in one pass")
@@ -87,14 +87,6 @@ def init_config():
         elif key in load and (type(config.__dict__[key]) == type(True)) and not config.__dict__[key] and load[key]: #if it's boolean and false
             if str(load[key]) == "True":
                 config.__dict__[key] = True
-    
-    #if config.__dict__["password"] is None:
-    #    logging.info("Secure Password Input (if there is no password prompt, use --password <pw>):")
-    #    config.__dict__["password"] = getpass.getpass()    
-    #
-    #if config.auth_service not in ['ptc', 'google']:
-    #    logging.error("Invalid Auth service specified! ('ptc' or 'google')")
-    #    return None
         
     if config.__dict__["minimumIV"] is None:
         config.__dict__["minimumIV"] = "101"
@@ -110,7 +102,7 @@ def init_config():
         return
     
     if config.evolve_list is not None:
-        logging.error("Evolve lsit has been deprecated. Please use white list instead (-wl).")
+        logging.error("Evolve list has been deprecated. Please use white list instead (-wl).")
         return
     
     if config.white_list is not None:
