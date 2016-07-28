@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "pokeIV-gui.py", line 30, in <module>
+  File "zipextimporter.pyc", line 82, in load_module
+  File "pgoapi\__init__.pyc", line 17, in <module>
+pgoapi.exceptions.PleaseInstallProtobufVersion3
+Traceback (most recent call last):
+  File "pokeIV-gui.py", line 30, in <module>
+  File "zipextimporter.pyc", line 82, in load_module
+  File "pgoapi\__init__.pyc", line 17, in <module>
+pgoapi.exceptions.PleaseInstallProtobufVersion3
