@@ -45,5 +45,6 @@ setup(data_files=mydata,
                         'POGOProtos.Networking.Responses_pb2']
             ,'bundle_files': 1
             ,'compressed': True
+			,'dll_excludes': [ 'crypt32.dll', 'mpr.dll']
 		}
      })
