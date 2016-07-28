@@ -18,7 +18,7 @@ Current features:
   * delays for transferring, evolution and renaming to avoid suspicious activity
   
 # Windows
-There is now an executable distrobution of PokeIV located in the 'dist' directory. This executable was built using py2exe and does not need an external Python installation to run. It was built on Windows 10 and has not been tested on other versions.
+There is now an executable distribution of PokeIV located in the 'dist' directory. This executable was built using py2exe and does not need an external Python installation to run. It was built on Windows 10 and has not been tested on other versions.
 
 # Linux / other
 Requires Python 2/3
