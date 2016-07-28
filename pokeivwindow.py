@@ -2,6 +2,8 @@
 
 from tkinter import ttk
 import tkinter as tk
+import threading
+from multiprocessing import Queue
 
 class PokeIVWindow(tk.Canvas):
     def __init__(self, config, data, master=None):
@@ -15,6 +17,13 @@ class PokeIVWindow(tk.Canvas):
         self.storage = tk.StringVar()
         self.pokecoins = tk.StringVar()
         self.stardust = tk.StringVar()
+        self.evolve_button = tk.Button()
+        self.transfer_button = tk.Button()
+        self.rename_button = tk.Button()
+        self.config_button = tk.Button()
+        self.login_button = tk.Button()
+        self.refresh_button = tk.Button()
+        self.cancel_button = tk.Button()
         self.transfer_list = []
         self.evolve_list = []
         self.rename_list = []
@@ -55,7 +64,7 @@ class PokeIVWindow(tk.Canvas):
                 self.config["password"] = password.get()
                 self.config["username"] = username.get()
                 self.config["auth_service"] = auth.get()
-                self.relog()
+                self.queue_function(self.relog)
         
         # auth/google radiobuttons
         buttons = tk.Frame(login_frame)
@@ -76,7 +85,8 @@ class PokeIVWindow(tk.Canvas):
         pass_frame.pack(side="top", fill="both", expand=True)
         
         # submit button -- bind submit and return to login
-        tk.Button(login_frame, text="Login", command = lambda: _log_in()).pack(side="bottom", fill="both")
+        self.login_button = tk.Button(login_frame, text="Login", command = lambda: _log_in())
+        self.login_button.pack(side="bottom", fill="both")
         passEntry.bind("<Return>", lambda e: _log_in())
         userEntry.bind("<Return>", lambda e: _log_in())
         
@@ -506,15 +516,33 @@ class PokeIVWindow(tk.Canvas):
             self.log_info("idle...")
             self.update_display()
             
-    def disable_buttons(self):
+    def disable_action_buttons(self):
         self.evolve_button.config(state="disabled")
         self.transfer_button.config(state="disabled")
         self.rename_button.config(state="disabled")
-        
-    def enable_buttons(self):
+    
+    def enable_action_buttons(self):
         self.evolve_button.config(state="normal")
         self.transfer_button.config(state="normal")
         self.rename_button.config(state="normal")
+        
+    def disable_all_buttons(self):
+        self.evolve_button.config(state="disabled")
+        self.transfer_button.config(state="disabled")
+        self.rename_button.config(state="disabled")
+        self.config_button.config(state="disabled")
+        self.login_button.config(state="disabled")
+        self.refresh_button.config(state="disabled")
+        self.cancel_button.config(state="disabled")
+    
+    def enable_all_buttons(self):
+        self.evolve_button.config(state="normal")
+        self.transfer_button.config(state="normal")
+        self.rename_button.config(state="normal")
+        self.config_button.config(state="normal")
+        self.login_button.config(state="normal")
+        self.refresh_button.config(state="normal")
+        self.cancel_button.config(state="normal")
 
     def evolve(self, p):
         self.data.evolve_pokemon(p)
@@ -561,15 +589,35 @@ class PokeIVWindow(tk.Canvas):
         self.update_display()
     
     def update_display(self):
+        self.disable_all_buttons()
         self.reset_windows()
         self.set_player_info()
+        self.enable_all_buttons()
             
     def refresh(self):
+        self.disable_all_buttons()
         self.data["config"] = self.config
         self.data.update()
         self.update_display()
-        
+        self.enable_all_buttons()
+    
+    def queue_function(self, f):
+        queue = Queue()
+        Threaded(queue, f).start()
+    
     def relog(self):
+        self.disable_all_buttons()
         self.data["config"] = self.config
         self.data.login()
         self.update_display()
+        self.enable_all_buttons()
+
+class Threaded(threading.Thread):
+    def __init__(self, queue, f):
+        threading.Thread.__init__(self)
+        self.queue = queue
+        self.func = f
+        
+    def run(self):
+        self.func()
+        
