@@ -38,27 +38,20 @@ from s2sphere import Cell, CellId, LatLng
 
 log = logging.getLogger(__name__)
 def setupLogger():
-    # log settings
-    # log format
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format='%(asctime)s [%(module)10s] [%(levelname)5s] %(message)s')
-    # log level for http request class
     logging.getLogger("requests").setLevel(logging.WARNING)
-    # log level for main pgoapi class
     logging.getLogger("pgoapi").setLevel(logging.INFO)
-    # log level for internal pgoapi class
     logging.getLogger("rpc_api").setLevel(logging.INFO)
 
 def init_config():
     parser = argparse.ArgumentParser()
     config_file = "config.json"
 
-    # If config file exists, load variables from json
     load   = {}
     if os.path.isfile(config_file):
         with open(config_file) as data:
             load.update(json.load(data))
     
-    # Read passed in Arguments
     required = lambda x: not x in load
     parser.add_argument("-a", "--auth_service", help="Auth Service ('ptc' or 'google')")
     parser.add_argument("-u", "--username", help="Username")
@@ -80,7 +73,6 @@ def init_config():
     parser.add_argument("-dn", "--display_nickname", help="Display nicknames instead of pokemon type", action="store_true")
     config = parser.parse_args()
     
-    # Passed in arguments shoud trump
     for key in config.__dict__:
         if key in load and config.__dict__[key] is None and load[key]:
             if key == "black_list" or key == "white_list":
@@ -113,7 +105,7 @@ def init_config():
     if config.black_list is not None:
         config.black_list = [x.lower() for x in config.black_list]
     
-    return OrderedDict(sorted(vars(config).items())) #namespaces are annoying => sorted dict
+    return OrderedDict(sorted(vars(config).items()))     
 
 def main():
     setupLogger()
@@ -125,56 +117,11 @@ def main():
         return
         
     if config["password"] is None or config["username"] is None or config["auth_service"] not in ['ptc', 'google']:
-        login = tk.Tk()
-        login.wm_title("Pokemon Go Login")
-        login.style = ttk.Style()
-        login.style.theme_use("classic")
-        app = tk.Frame(login)
-        
-        auth = tk.StringVar()
-        username = tk.StringVar()
-        password = tk.StringVar()
-        
-        def _log_in():
-            config["password"] = password.get()
-            config["username"] = username.get()
-            config["auth_service"] = auth.get()
-            login.destroy()
-            start(config)
-        
-        if "auth_service" in config and config["auth_service"] == "google":
-            auth.set("google")
-        elif "auth_service" in config and config["auth_service"] == "ptc":
-            auth.set("ptc")
-        else:
-            auth.set("google")
-            
-        buttons = tk.Frame(app)
-        tk.Radiobutton(buttons, text="Google Login", variable=auth, value="google").pack(side="left", fill="both")
-        tk.Radiobutton(buttons, text="PTC Login", variable=auth, value="ptc").pack(side="right", fill="both")
-        buttons.pack(side="top")
-        
-        if config["username"] is not None:
-            username.set(config["username"])
-        if config["password"] is not None:
-            password.set(config["password"])
-        user_frame = tk.Frame(app)
-        tk.Label(user_frame, text="Username: ", width=10).pack(side="left", fill="both")
-        tk.Entry(user_frame, textvariable=username).pack(side="right", fill="both", expand=True)
-        pass_frame = tk.Frame(app)
-        tk.Label(pass_frame, text="Password: ", width=10).pack(side="left", fill="both")
-        tk.Entry(pass_frame, textvariable=password).pack(side="right", fill="both", expand=True)
-        user_frame.pack(side="top", fill="both", expand=True)
-        pass_frame.pack(side="top", fill="both", expand=True)
-        
-        tk.Button(app, text="Login", command = lambda: _log_in()).pack(side="bottom", fill="both")
-        
-        app.pack()
-        app.mainloop()
-    else:
         start(config)
+    else:
+        start(config, login=True)
     
-def start(config):
+def start(config, login=False):
     # -- dictionaries for pokedex, families, and evolution prices
     with open('names.tsv') as f:
         f.readline()
@@ -191,14 +138,14 @@ def start(config):
     # instantiate pgoapi
     api = pgoapi.PGoApi()
     
-    data = PokemonData(pokedex, family, cost, config, api)
+    data = PokemonData(pokedex, family, cost, config, api, login)
     
     main_window = tk.Tk()
     
     main_window.style = ttk.Style()
     main_window.style.theme_use("classic")
     
-    app = PokeIVWindow(config,data,api,master=main_window)
+    app = PokeIVWindow(config,data,master=main_window)
     app.mainloop()
     
 if __name__ == '__main__':

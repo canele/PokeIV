@@ -5,14 +5,27 @@ from ast import literal_eval
 
 class PokemonData(dict):   
     #A dictionary for all of the key information used in pokeIV
-    def __init__(self, pokedex, family, cost, config, api):
+    def __init__(self, pokedex, family, cost, config, api, login=False):
         self["family"] = family
         self["cost"] = cost
         self["pokedex"] = pokedex
         self["api"] = api
         self["config"] = config
-        #updates inventory and player info
-        self.login()
+        #init
+        self["all"] = []
+        self["candy"] = []
+        self["best"] = []
+        self["extra"] = []
+        self["other"] = []
+        self["transfer"] = []
+        self["evolve"] = []
+        self["evolve_counts"] = dict()
+        self["needed_counts"] = dict()
+        self["unique_counts"] = dict()
+        if login:
+            #updates inventory and player info
+            self.login()
+        #set info
         self.init_info()
      
     def init_info(self):

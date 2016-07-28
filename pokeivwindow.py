@@ -3,11 +3,13 @@
 from tkinter import ttk
 import tkinter as tk
 
-class PokeIVWindow(tk.Frame):
-    def __init__(self, config, data, api, master=None):
-        tk.Frame.__init__(self,master)
+class PokeIVWindow(tk.Canvas):
+    def __init__(self, config, data, master=None):
+        tk.Canvas.__init__(self,master)
+        self.bind("<Configure>", self.on_resize)
+        self.height = self.winfo_reqheight()
+        self.width = self.winfo_reqwidth()
         self.data = data
-        self.api = api
         self.logText = tk.StringVar()
         self.name = tk.StringVar()
         self.storage = tk.StringVar()
@@ -24,10 +26,74 @@ class PokeIVWindow(tk.Frame):
         self.config = config
         self.config_boxes = {}
         self.create_widgets()
-        master.bind("<Escape>", self.key_press)
+        master.bind("<Escape>", self.esc_press)
         self.pack()
+    
+    def create_login_frame(self, master):
+        login_frame = tk.Frame(master)
         
-    def key_press(self, event):
+        auth = tk.StringVar()
+        username = tk.StringVar()
+        password = tk.StringVar()
+        
+        #set auth to what is in config
+        if "auth_service" in self.config and self.config["auth_service"] == "google":
+            auth.set("google")
+        elif "auth_service" in self.config and self.config["auth_service"] == "ptc":
+            auth.set("ptc")
+        else:
+            auth.set("google")
+        # set username/password to what is in config
+        if self.config["username"] is not None:
+            username.set(self.config["username"])
+        if self.config["password"] is not None:
+            password.set(self.config["password"])
+        
+        # try to log in if values are set
+        def _log_in():
+            if password.get() and username.get():
+                self.config["password"] = password.get()
+                self.config["username"] = username.get()
+                self.config["auth_service"] = auth.get()
+                self.relog()
+        
+        # auth/google radiobuttons
+        buttons = tk.Frame(login_frame)
+        tk.Radiobutton(buttons, text="Google Login", variable=auth, value="google").pack(side="left", fill="both")
+        tk.Radiobutton(buttons, text="PTC Login", variable=auth, value="ptc").pack(side="right", fill="both")
+        buttons.pack(side="top")
+        
+        #user/pass labels and entries
+        user_frame = tk.Frame(login_frame)
+        tk.Label(user_frame, text="Username: ", width=10).pack(side="left", fill="both")
+        userEntry = tk.Entry(user_frame, textvariable=username)
+        userEntry.pack(side="right", fill="both", expand=True)
+        pass_frame = tk.Frame(login_frame)
+        tk.Label(pass_frame, text="Password: ", width=10).pack(side="left", fill="both")
+        passEntry = tk.Entry(pass_frame, textvariable=password, show="*")
+        passEntry.pack(side="right", fill="both", expand=True)
+        user_frame.pack(side="top", fill="both", expand=True)
+        pass_frame.pack(side="top", fill="both", expand=True)
+        
+        # submit button -- bind submit and return to login
+        tk.Button(login_frame, text="Login", command = lambda: _log_in()).pack(side="bottom", fill="both")
+        passEntry.bind("<Return>", lambda e: _log_in())
+        userEntry.bind("<Return>", lambda e: _log_in())
+        
+        return login_frame
+    
+    def on_resize(self,event):
+        # determine the ratio of old width/height to new width/height
+        wscale = float(event.width)/self.width
+        hscale = float(event.height)/self.height
+        self.width = event.width
+        self.height = event.height
+        # resize the canvas 
+        self.configure(width=self.width, height=self.height)
+        # rescale all the objects tagged with the "all" tag
+        self.scale("all",0,0,wscale,hscale)    
+        
+    def esc_press(self, event):
         self.clear_trees()
         
     def best_select(self, event):
@@ -45,6 +111,8 @@ class PokeIVWindow(tk.Frame):
         
         for key in list(self.config.keys()):
             if (type(self.config[key]) != type(True)): #if not boolean
+                if key in ["username", "password"]:
+                    continue
                 if key == "evolve_list": #deprecated, don't show
                     continue
                 self.config_boxes[key] = tk.StringVar()
@@ -92,10 +160,8 @@ class PokeIVWindow(tk.Frame):
         topFrame = tk.Frame(self.master_frame)
         self.config_button = tk.Button(topFrame, text="Config", command=self.show_config_window)
         self.refresh_button = tk.Button(topFrame, text="Refresh", command=self.refresh, width=5)
-        self.relog_button = tk.Button(topFrame, text="Login", command=self.relog, width=5)
         self.config_button.pack(side="left", fill="both", expand=True)
         self.refresh_button.pack(side="right", fill="both")
-        self.relog_button.pack(side="right", fill="both")
         topFrame.pack(side="top", fill="both")
         
         self.list_windows = self.create_list_windows(self.master_frame)
@@ -104,7 +170,7 @@ class PokeIVWindow(tk.Frame):
         self.log.pack(side="bottom", fill="both")
         self.init_windows = self.create_interactive(self.master_frame)
         self.init_windows.pack(side="bottom", fill="both")
-        self.master_frame.pack(fill="both")
+        self.master_frame.pack(fill="both", expand=True)
     
     def set_config(self):
         for key in list(self.config_boxes.keys()):
@@ -157,7 +223,9 @@ class PokeIVWindow(tk.Frame):
         self.tickboxes = self.create_checkbuttons(info_frame)
         self.tickboxes.pack(side="left", fill="both", expand=True)
         self.player_frame = self.create_player_info(info_frame)
-        self.player_frame.pack(side="right", fill="both")
+        self.player_frame.pack(side="left", fill="both")
+        self.login_frame = self.create_login_frame(info_frame)
+        self.login_frame.pack(side="right", fill="both")
         info_frame.pack(side="bottom", fill="both")
         
         return right_windows
@@ -497,9 +565,11 @@ class PokeIVWindow(tk.Frame):
         self.set_player_info()
             
     def refresh(self):
+        self.data["config"] = self.config
         self.data.update()
         self.update_display()
         
     def relog(self):
+        self.data["config"] = self.config
         self.data.login()
         self.update_display()
