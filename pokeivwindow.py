@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#This software uses pgoapi - see pgoapi-license.txt
 
 from tkinter import ttk
 import tkinter as tk

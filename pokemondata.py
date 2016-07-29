@@ -1,3 +1,5 @@
+#This software uses pgoapi - see pgoapi-license.txt
+
 import re
 import json
 import time
