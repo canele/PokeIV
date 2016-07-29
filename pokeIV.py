@@ -84,9 +84,9 @@ def init_config():
             if str(load[key]) == "True":
                 config.__dict__[key] = True
     
-    if config.__dict__["password"] is None:
-        logging.info("Secure Password Input (if there is no password prompt, use --password <pw>):")
-        config.__dict__["password"] = getpass.getpass()
+    if config.__dict__["password"] is None or config.__dict__["username"] is None:
+        logging.info("Username and password are required.")
+        return None
 
     if config.auth_service not in ['ptc', 'google']:
         logging.error("Invalid Auth service specified! ('ptc' or 'google')")
