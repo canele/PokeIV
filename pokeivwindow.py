@@ -8,7 +8,6 @@ from multiprocessing import Queue
 class PokeIVWindow(tk.Canvas):
     def __init__(self, config, data, master=None):
         tk.Canvas.__init__(self,master)
-        self.bind("<Configure>", self.on_resize)
         self.height = self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
         self.data = data
@@ -36,6 +35,7 @@ class PokeIVWindow(tk.Canvas):
         self.config_boxes = {}
         self.create_widgets()
         master.bind("<Escape>", self.esc_press)
+        master.resizable(0,0)
         self.pack()
     
     def create_login_frame(self, master):
@@ -75,11 +75,11 @@ class PokeIVWindow(tk.Canvas):
         #user/pass labels and entries
         user_frame = tk.Frame(login_frame)
         tk.Label(user_frame, text="Username: ", width=10).pack(side="left", fill="both")
-        userEntry = tk.Entry(user_frame, textvariable=username)
+        userEntry = tk.Entry(user_frame, textvariable=username,width=10)
         userEntry.pack(side="right", fill="both", expand=True)
         pass_frame = tk.Frame(login_frame)
         tk.Label(pass_frame, text="Password: ", width=10).pack(side="left", fill="both")
-        passEntry = tk.Entry(pass_frame, textvariable=password, show="*")
+        passEntry = tk.Entry(pass_frame, textvariable=password,width=10, show="*")
         passEntry.pack(side="right", fill="both", expand=True)
         user_frame.pack(side="top", fill="both", expand=True)
         pass_frame.pack(side="top", fill="both", expand=True)
@@ -91,17 +91,6 @@ class PokeIVWindow(tk.Canvas):
         userEntry.bind("<Return>", lambda e: _log_in())
         
         return login_frame
-    
-    def on_resize(self,event):
-        # determine the ratio of old width/height to new width/height
-        wscale = float(event.width)/self.width
-        hscale = float(event.height)/self.height
-        self.width = event.width
-        self.height = event.height
-        # resize the canvas 
-        self.configure(width=self.width, height=self.height)
-        # rescale all the objects tagged with the "all" tag
-        self.scale("all",0,0,wscale,hscale)    
         
     def esc_press(self, event):
         self.clear_trees()
@@ -242,10 +231,10 @@ class PokeIVWindow(tk.Canvas):
     
     def create_player_info(self, master):
         frame = tk.Frame(master)
-        tk.Label(frame, textvariable = self.name, anchor="w", justify="left").pack(side="top", fill="both", padx=10)
-        tk.Label(frame, textvariable = self.storage, anchor="w", justify="left").pack(side="top", fill="both", padx=10)
-        tk.Label(frame, textvariable = self.pokecoins, anchor="w", justify="left").pack(side="top", fill="both", padx=10)
-        tk.Label(frame, textvariable = self.stardust, anchor="w", justify="left").pack(side="top", fill="both", padx=10)
+        tk.Label(frame, textvariable = self.name, anchor="w", justify="left").pack(side="top", fill="both", padx=5)
+        tk.Label(frame, textvariable = self.storage, anchor="w", justify="left").pack(side="top", fill="both", padx=5)
+        tk.Label(frame, textvariable = self.pokecoins, anchor="w", justify="left").pack(side="top", fill="both", padx=5)
+        tk.Label(frame, textvariable = self.stardust, anchor="w", justify="left").pack(side="top", fill="both", padx=5)
         self.set_player_info()
         return frame
         
