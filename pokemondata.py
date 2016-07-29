@@ -17,8 +17,6 @@ class PokemonData(dict):
         self["all"] = []
         self["candy"] = []
         self["best"] = []
-        self["extra"] = []
-        self["other"] = []
         self["transfer"] = []
         self["evolve"] = []
         self["evolve_counts"] = dict()
@@ -31,17 +29,16 @@ class PokemonData(dict):
         self.init_info()
      
     def init_info(self):
+        self.set_evolve_counts()
+        self.set_unique_counts()
+        self.set_needed_counts()
         if self["config"]["hard_minimum"]:
             self.set_top()
         else:
             self.set_best()
-        self.set_evolve_counts()
-        self.set_unique_counts()
-        self.set_needed_counts()
-        self["extra"] = sorted(list(set(self["all"]) - set(self["best"])), key=lambda x: x.iv)
-        self.set_transfer()
-        self["other"] = sorted(list(set(self["extra"]) - set(self["transfer"])), key=lambda x: x.iv, reverse=True)
-        self.set_evolve()    
+        self.set_evolve()
+        #anything that's not in best or evolve should be transferred
+        self["transfer"] = sorted(list(set(self["all"]) - set(self["best"]) - set(self["evolve"])), key=lambda x: x.iv)
         
     def update_player_and_inventory(self):
         # add inventory to rpc call
@@ -179,21 +176,6 @@ class PokemonData(dict):
                 self["best"].append(p)
 
         self["best"].sort(key=lambda x: x.iv, reverse=True)
-		
-    def set_transfer(self):
-        self["transfer"] = []
-        if self["extra"]:
-            used = dict()
-            for p in self["extra"]:
-                if self.black_listed(p) or not self.white_listed(p):
-                    continue
-                id = str(p.number)
-                used[id] = 0 if id not in used else used[id]
-                if self["config"]["force"] or id not in self["evolve_counts"] or used[id] < (self["unique_counts"][id] - self["evolve_counts"][id]):
-                    self["transfer"].append(p)
-                used[id] = used[id] + 1
-
-        self["transfer"].sort(key=lambda x: x.iv)
 
     def set_evolve(self):
         self["evolve"] = []
