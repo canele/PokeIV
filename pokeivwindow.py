@@ -64,7 +64,7 @@ class PokeIVWindow(tk.Canvas):
                 self.config["password"] = password.get()
                 self.config["username"] = username.get()
                 self.config["auth_service"] = auth.get()
-                self.queue_function(self.relog)
+                threading.Thread(target=self.relog).start()
         
         # auth/google radiobuttons
         buttons = tk.Frame(login_frame)
@@ -590,23 +590,9 @@ class PokeIVWindow(tk.Canvas):
         self.update_display()
         self.enable_all_buttons()
     
-    def queue_function(self, f):
-        queue = Queue()
-        Threaded(queue, f).start()
-    
     def relog(self):
         self.disable_all_buttons()
         self.data["config"] = self.config
         self.data.login()
         self.update_display()
         self.enable_all_buttons()
-
-class Threaded(threading.Thread):
-    def __init__(self, queue, f):
-        threading.Thread.__init__(self)
-        self.queue = queue
-        self.func = f
-        
-    def run(self):
-        self.func()
-        
