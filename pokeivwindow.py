@@ -683,7 +683,7 @@ class PokeIVWindow(tk.Canvas):
         self.data["config"] = self.config
         queue = multiprocessing.Queue()
         Threaded(queue, self.data.login).start()
-        self.after(1000, lambda: self.check_login(queue))
+        self.after(100, lambda: self.check_login(queue))
     
     def check_login(self, queue):
         try:
@@ -691,7 +691,7 @@ class PokeIVWindow(tk.Canvas):
             self.update_display()
             self.enable_all_buttons()
         except multiprocessing.queues.Empty:
-            self.after(1000, lambda: self.check_login(queue))
+            self.after(100, lambda: self.check_login(queue))
 
 class Threaded(threading.Thread):
     def __init__(self, queue, f):
