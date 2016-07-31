@@ -330,7 +330,10 @@ class PokeIVWindow(tk.Canvas):
         
     def reset_tree_window(self, tree, pokemon):
         for i in tree.get_children():
-            tree.delete(i)
+            try:
+                tree.delete(i)
+            except TclError:
+                pass
             
         for p in pokemon:
             info = self.get_info(p)
@@ -347,7 +350,10 @@ class PokeIVWindow(tk.Canvas):
 
     def reset_tree_window_other(self, tree):
         for i in tree.get_children():
-            tree.delete(i)
+            try:
+                tree.delete(i)
+            except TclError:
+                pass
             
         for id in list(self.data["evolve_counts"].keys()):
             if id in self.data["needed_counts"] and id in self.data["unique_counts"] and id in self.data["evolve_counts"]:
