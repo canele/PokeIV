@@ -198,13 +198,13 @@ def main():
     api = pgoapi.PGoApi()
     
     # -- dictionaries for pokedex, families, and evolution prices
-    with open(os.path.join(root, 'pgoapi/pokemon.json')) as f:
+    with open(os.path.join(root, 'pgoapi','pokemon.json')) as f:
         pokemonInfo = json.load(f)
         
-    with open(os.path.join(root, 'pgoapi/moves.json')) as f:
+    with open(os.path.join(root, 'pgoapi','moves.json')) as f:
         moveInfo = json.load(f)
         
-    with open(os.path.join(root, 'pgoapi/types.json')) as f:
+    with open(os.path.join(root, 'pgoapi','types.json')) as f:
         types = json.load(f)
         
     with open('families.tsv') as f:
