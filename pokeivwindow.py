@@ -334,7 +334,7 @@ class PokeIVWindow(tk.Canvas):
             
         for p in pokemon:
             info = self.get_info(p)
-            if any(e.id == p.id for e in self.evolve_list) or any(e.id == p.id for e in self.transfer_list) or any(e.id == p.id for e in self.rename_list):
+            if any(e.id == p.id for e in self.evolve_list) or any(e.id == p.id for e in self.transfer_list) or any(e.id == p.id for e in self.rename_list) or (self.upgrade_item and self.upgrade_item.id == p.id):
                 tree.insert('', 'end', text=info[0], values=list(info[1:]) + [p.id], tags=('working',))
             else:
                 tree.insert('', 'end', text=info[0], values=list(info[1:]) + [p.id])
@@ -564,6 +564,7 @@ class PokeIVWindow(tk.Canvas):
         else:
             self.log_info("idle...")
             self.update_display()
+            self.upgrade_item = None
             
     def disable_action_buttons(self):
         self.evolve_button.config(state="disabled")
@@ -629,10 +630,13 @@ class PokeIVWindow(tk.Canvas):
         self.update_display()
         if self.get_upgrade_count() > 0 and self.upgrade_item:
             self.upgrade_count.set(self.get_upgrade_count() - 1)
+            if self.get_upgrade_count() <= 0:
+                self.upgrade_item = None
             self.upgrade_pokemon()
         else:
             self.enable_action_buttons()
             self.log_info("idle...")
+            self.upgrade_item = None
         
     def cancel_actions(self):
         for id in self.transfer_ids[:]:
