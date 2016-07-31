@@ -1,0 +1,20 @@
+{ 
+"normal":"floral white",
+"fire":"red",
+"water":"royal blue",
+"electric":"yellow",
+"grass":"green",
+"ice":"cyan",
+"poison":"purple",
+"psychic":"magenta",
+"fighting":"firebrick",
+"ground":"brown",
+"rock":"gray",
+"bug":"yellow green",
+"flying":"light blue",
+"dragon":"slate blue",
+"ghost":"light purple",
+"steel":"slate gray",
+"dark":"sienna",
+"fairy":"pink"
+}
