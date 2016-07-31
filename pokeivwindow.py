@@ -351,7 +351,7 @@ class PokeIVWindow(tk.Canvas):
             
         for id in list(self.data["evolve_counts"].keys()):
             if id in self.data["needed_counts"] and id in self.data["unique_counts"] and id in self.data["evolve_counts"]:
-                info = (self.data["pokedex"][id],self.data["evolve_counts"][id],self.data["unique_counts"][id],self.data["needed_counts"][id])
+                info = (self.data["pokedex"][int(id)],self.data["evolve_counts"][id],self.data["unique_counts"][id],self.data["needed_counts"][id])
                 if self.data["needed_counts"][id] <= 0:
                     tree.insert('','end',text=info[0], values=info[1:-1])
                 else:
@@ -371,7 +371,7 @@ class PokeIVWindow(tk.Canvas):
             tree.column(col, width=cols["width"][i], stretch="yes")
         for id in list(self.data["evolve_counts"].keys()):
             if id in self.data["needed_counts"] and id in self.data["unique_counts"] and id in self.data["evolve_counts"]:
-                info = (self.data["pokedex"][id],self.data["evolve_counts"][id],self.data["unique_counts"][id],self.data["needed_counts"][id])
+                info = (self.data["pokedex"][int(id)],self.data["evolve_counts"][id],self.data["unique_counts"][id],self.data["needed_counts"][id])
                 if self.data["needed_counts"][id] <= 0:
                     tree.insert('','end',text=info[0], values=info[1:-1])
                 else:
