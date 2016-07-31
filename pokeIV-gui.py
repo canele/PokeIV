@@ -24,9 +24,11 @@ from pokeivwindow import PokeIVWindow
 
 # add directory of this file to PATH, so that the package will be found
 try:
-    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+    root = os.path.dirname(os.path.realpath(__file__))
 except NameError:
-    sys.path.append(os.path.dirname(os.path.realpath(sys.argv[0])))
+    root = os.path.dirname(os.path.realpath(sys.argv[0]))
+    
+sys.path.append(os.path.dirname(root))
 
 # import Pokemon Go API lib
 from pgoapi import pgoapi
@@ -125,9 +127,14 @@ def main():
     
 def start(config, login=False):
     # -- dictionaries for pokedex, families, and evolution prices
-    with open('names.tsv') as f:
-        f.readline()
-        pokedex = dict(csv.reader(f, delimiter='\t'))
+    with open(os.path.join(root, 'pgoapi/pokemon.json')) as f:
+        pokemonInfo = json.load(f)
+        
+    with open(os.path.join(root, 'pgoapi/moves.json')) as f:
+        moveInfo = json.load(f)
+        
+    with open(os.path.join(root, 'pgoapi/types.json')) as f:
+        types = json.load(f)
         
     with open('families.tsv') as f:
         f.readline()
@@ -137,10 +144,13 @@ def start(config, login=False):
         f.readline()
         cost = dict(csv.reader(f, delimiter='\t'))
         
+    pokedex = dict([(int(p["Number"]),p["Name"]) for p in pokemonInfo])
+    moves = dict([(int(m["id"]),{"type":m["type"],"name":m["name"]}) for m in moveInfo])
+    
     # instantiate pgoapi
     api = pgoapi.PGoApi()
     
-    data = PokemonData(pokedex, family, cost, config, api, login)
+    data = PokemonData(pokedex, moves, types, family, cost, config, api, login)
     
     main_window = tk.Tk()
     

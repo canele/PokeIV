@@ -242,7 +242,7 @@ class PokeIVWindow(tk.Canvas):
         if "name" in self.data and self.data["name"] is not None:
             self.name.set(self.data["name"])
         if "pokemon_storage" in self.data and self.data["pokemon_storage"] is not None:
-            self.storage.set(str(len(self.data["all"]))+" / "+self.data["pokemon_storage"]+"\tPokemon storage used")
+            self.storage.set(str(len(self.data["all"]))+" / "+self.data["pokemon_storage"]+"\tPokemon")
         if "pokecoins" in self.data and self.data["pokecoins"] is not None:
             self.pokecoins.set(self.data["pokecoins"]+"\tPokecoins")
         else:
@@ -402,14 +402,15 @@ class PokeIVWindow(tk.Canvas):
         
     def get_info(self,pokemon):
         if self.config["display_nickname"]:
-            return (str(pokemon.nickname),str(pokemon.attack),str(pokemon.defense),str(pokemon.stamina),str(pokemon.cp),str('{0:>2.2%}').format(pokemon.ivPercent))
+            name = str(pokemon.nickname)
         else:
-            return (str(pokemon.name),str(pokemon.attack),str(pokemon.defense),str(pokemon.stamina),str(pokemon.cp),str('{0:>2.2%}').format(pokemon.ivPercent))
+            name = str(pokemon.name)
+        return (name,str(pokemon.attack),str(pokemon.defense),str(pokemon.stamina),str(pokemon.move_1),str(pokemon.move_2),str(pokemon.cp),str('{0:>2.2%}').format(pokemon.ivPercent))
         
     def get_columns(self):
-        return {'verbose': ('POKEMON','ATK','DEF','STA','CP','IV'),
+        return {'verbose': ('POKEMON','ATK','DEF','STA','MOVE 1', 'MOVE 2', 'CP','IV'),
                 'min': ('POKEMON','CP','IV'),
-                'width': (100,30,30,30,60,60)}
+                'width': (100,30,30,30,100,100,60,60)}
                     
     def log_info(self, text, level=None):
         self.logText.set(text)

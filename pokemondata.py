@@ -7,10 +7,12 @@ from ast import literal_eval
 
 class PokemonData(dict):   
     #A dictionary for all of the key information used in pokeIV
-    def __init__(self, pokedex, family, cost, config, api, login=False):
+    def __init__(self, pokedex, moves, types, family, cost, config, api, login=False):
         self["family"] = family
         self["cost"] = cost
         self["pokedex"] = pokedex
+        self["moves"] = moves
+        self["types"] = types
         self["api"] = api
         self["config"] = config
         #init
@@ -124,7 +126,11 @@ class PokemonData(dict):
         def _add_pokemon(node):
             pok = type('',(),{})
             pok.id = node["id"]
-            pok.name = self["pokedex"][str(node["pokemon_id"])]
+            pok.name = self["pokedex"][int(node["pokemon_id"])]
+            pok.move_1 = self["moves"][int(node["move_1"])]["name"]
+            pok.move_1_type = self["moves"][int(node["move_1"])]["type"]
+            pok.move_2 = self["moves"][int(node["move_2"])]["name"]
+            pok.move_2_type = self["moves"][int(node["move_2"])]["type"]
             pok.nickname = node["nickname"] if "nickname" in node else ""
             pok.family = self["family"][str(node["pokemon_id"])]
             pok.number = node["pokemon_id"]
