@@ -681,14 +681,14 @@ class PokeIVWindow(tk.Canvas):
     def relog(self):
         queue = multiprocessing.Queue()
         Threaded(queue, self.login).start()
-        self.after(500, lambda: self.check_login(queue))
+        self.after(1000, lambda: self.check_login(queue))
     
     def check_login(self, queue):
         try:
             status = queue.get(0)
             self.update_display()
         except multiprocessing.queues.Empty:
-            self.after(500, lambda: self.check_login(queue))
+            self.after(1000, lambda: self.check_login(queue))
     
     def login(self):
         self.disable_all_buttons()
