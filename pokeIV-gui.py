@@ -24,9 +24,9 @@ from pokeivwindow import PokeIVWindow
 
 # add directory of this file to PATH, so that the package will be found
 try:
-    root = os.path.dirname(os.path.realpath(__file__))
+    root = os.path.normpath(os.path.dirname(os.path.realpath(__file__)))
 except NameError:
-    root = os.path.dirname(os.path.realpath(sys.argv[0]))
+    root = os.path.normpath(os.path.dirname(os.path.realpath(sys.argv[0])))
     
 sys.path.append(os.path.dirname(root))
 
