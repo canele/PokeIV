@@ -23,6 +23,9 @@ class PokeIVWindow(tk.Canvas):
         self.login_button = tk.Button()
         self.refresh_button = tk.Button()
         self.cancel_button = tk.Button()
+        self.upgrade_count = tk.StringVar()
+        self.upgrade_count.set("0")
+        self.upgrade_item = None
         self.transfer_list = []
         self.evolve_list = []
         self.rename_list = []
@@ -30,6 +33,7 @@ class PokeIVWindow(tk.Canvas):
         self.transfer_ids = []
         self.evolve_ids = []
         self.rename_ids = []
+        self.upgrade_ids = []
         self.check_boxes = {}
         self.config = config
         self.config_boxes = {}
@@ -206,17 +210,34 @@ class PokeIVWindow(tk.Canvas):
         right_windows = tk.Frame(master)
         
         button_frame = tk.Frame(master)
-        action_buttons = tk.Frame(button_frame)
-        self.evolve_button = tk.Button(action_buttons, text="Evolve", command=self.evolve_action)
-        self.evolve_button.pack(side="top", fill="both")
-        self.rename_button = tk.Button(action_buttons, text="Rename", command=self.rename_action)
-        self.rename_button.pack(side="bottom", fill="both")
-        self.transfer_button = tk.Button(action_buttons, text="Transfer", command=self.transfer_action)
-        self.transfer_button.pack(side="bottom", fill="both")
+        left_buttons = tk.Frame(button_frame)
+        right_buttons = tk.Frame(button_frame)
+        #left: 
+            #right
+        self.evolve_button = tk.Button(left_buttons, text="Evolve", command=self.evolve_action)
+        self.evolve_button.pack(side="top", fill="both", expand=True)
+            #transfer
+        self.transfer_button = tk.Button(left_buttons, text="Transfer", command=self.transfer_action)
+        self.transfer_button.pack(side="bottom", fill="both", expand=True)
+        #right: 
+			#upgrade
+        upgrade_frame = tk.Frame(right_buttons)
+        self.upgrade_button = tk.Button(upgrade_frame, text="Upgrade", command=self.upgrade_action)
+        self.upgrade_button.pack(side="left", fill="both", expand=True)
+        self.upgrade_entry = tk.Entry(upgrade_frame, width=3,textvariable=self.upgrade_count)
+        self.upgrade_entry.pack(side="right", fill="both")
+        upgrade_frame.pack(side="top", fill="both")
+            #rename
+        self.rename_button = tk.Button(right_buttons, text="Rename", command=self.rename_action)
+        self.rename_button.pack(side="bottom", fill="both", expand=True)
+        #far right: 
+            #cancel
         self.cancel_button = tk.Button(button_frame, text="Cancel", command=self.cancel_actions, width=5, bg="#CD5C5C")
-        action_buttons.pack(side="left", fill="both", expand=True)
+        
+        left_buttons.pack(side="left", fill="both", expand=True)
+        right_buttons.pack(side="left", fill="both", expand=True)
         self.cancel_button.pack(side="right", fill="y")
-        button_frame.pack(side="bottom", fill="both")
+        button_frame.pack(side="bottom", fill="both", expand=True)
         
         info_frame = tk.Frame(master)
         self.tickboxes = self.create_checkbuttons(info_frame)
@@ -417,7 +438,7 @@ class PokeIVWindow(tk.Canvas):
         if level == "working":
             self.log.configure(bg="yellow")
         elif level == "error":
-            self.log.configure(bg="red")
+            self.log.configure(bg="salmon")
         else:
             self.log.configure(bg="#D0F0C0")
     
@@ -476,6 +497,34 @@ class PokeIVWindow(tk.Canvas):
             self.reset_windows()
             self.rename_pokemon()
     
+    def get_upgrade_count(self):
+        if self.upgrade_count.get().isdigit() and int(self.upgrade_count.get()) > 0:
+            return int(self.upgrade_count.get())
+        else:
+            return 0
+    
+    def upgrade_action(self):
+        if len(self.best_window.tree.selection()) > 1 or len(self.evolve_window.tree.selection()) > 1 or len(self.transfer_window.tree.selection()) > 1:
+            self.log_info("Can't upgrade more than 1 pokemon at a time", "error")
+            return
+        elif self.get_upgrade_count() <= 0:
+            self.log_info("You must enter a number of times to upgrade", "error")
+            return
+        elif self.best_window.tree.selection():
+            id = self.best_window.tree.item(self.best_window.tree.selection()[0], "values")[-1]
+            self.upgrade_item = self.data.get_pokemon(id)
+        elif self.evolve_window.tree.selection():
+            id = self.evolve_window.tree.item(self.evolve_window.tree.selection()[0], "values")[-1]
+            self.upgrade_item = self.data.get_pokemon(id)
+        elif self.transfer_window.tree.selection():
+            id = self.transfer_window.tree.item(self.transfer_window.tree.selection()[0], "values")[-1]
+            self.upgrade_item = self.data.get_pokemon(id)
+        else:
+            self.upgrade_item = None
+        self.clear_trees()
+        self.reset_windows()
+        self.upgrade_pokemon()
+    
     def evolve_pokemon(self):
         if self.evolve_list:
             p = self.evolve_list.pop(0)
@@ -506,15 +555,27 @@ class PokeIVWindow(tk.Canvas):
             self.log_info("idle...")
             self.update_display()
             
+    def upgrade_pokemon(self):
+        if self.get_upgrade_count() > 0 and self.upgrade_item:
+            p = self.upgrade_item
+            self.log_info('{0:<25} {1:<20}'.format('upgrading pokemon: '+str(p.name)+':',self.data.get_new_nickname(p)), "working")
+            self.disable_action_buttons()
+            self.upgrade_ids.append(self.upgrade_button.after(int(self.config["upgrade_delay"])*1000, lambda: self.upgrade(p)))
+        else:
+            self.log_info("idle...")
+            self.update_display()
+            
     def disable_action_buttons(self):
         self.evolve_button.config(state="disabled")
         self.transfer_button.config(state="disabled")
         self.rename_button.config(state="disabled")
+        self.upgrade_button.config(state="disabled")
     
     def enable_action_buttons(self):
         self.evolve_button.config(state="normal")
         self.transfer_button.config(state="normal")
         self.rename_button.config(state="normal")
+        self.upgrade_button.config(state="normal")
         
     def disable_all_buttons(self):
         self.evolve_button.config(state="disabled")
@@ -524,6 +585,7 @@ class PokeIVWindow(tk.Canvas):
         self.login_button.config(state="disabled")
         self.refresh_button.config(state="disabled")
         self.cancel_button.config(state="disabled")
+        self.upgrade_button.config(state="disabled")
     
     def enable_all_buttons(self):
         self.evolve_button.config(state="normal")
@@ -533,6 +595,7 @@ class PokeIVWindow(tk.Canvas):
         self.login_button.config(state="normal")
         self.refresh_button.config(state="normal")
         self.cancel_button.config(state="normal")
+        self.upgrade_button.config(state="normal")
 
     def evolve(self, p):
         self.data.evolve_pokemon(p)
@@ -560,6 +623,16 @@ class PokeIVWindow(tk.Canvas):
         else:
             self.enable_action_buttons()
             self.log_info("idle...")
+            
+    def upgrade(self, p):
+        self.data.upgrade_pokemon(p)
+        self.update_display()
+        if self.get_upgrade_count() > 0 and self.upgrade_item:
+            self.upgrade_count.set(self.get_upgrade_count() - 1)
+            self.upgrade_pokemon()
+        else:
+            self.enable_action_buttons()
+            self.log_info("idle...")
         
     def cancel_actions(self):
         for id in self.transfer_ids[:]:
@@ -571,9 +644,13 @@ class PokeIVWindow(tk.Canvas):
         for id in self.rename_ids[:]:
             self.rename_button.after_cancel(id)
             self.rename_ids.remove(id)
+        for id in self.upgrade_ids[:]:
+            self.upgrade_button.after_cancel(id)
+            self.upgrade_ids.remove(id)
         self.transfer_list = []
         self.evolve_list = []
         self.rename_list = []
+        self.upgrade_item = None
         self.enable_all_buttons()
         self.log_info("idle...")
         self.update_display()

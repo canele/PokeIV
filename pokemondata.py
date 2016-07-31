@@ -293,6 +293,11 @@ class PokemonData(dict):
         self["api"].evolve_pokemon(pokemon_id=self.get_id(pokemon))
         #self["api"].call()
         self.update()
+        
+    def upgrade_pokemon(self, pokemon):
+        self["api"].upgrade_pokemon(pokemon_id=self.get_id(pokemon))
+        #self["api"].call()
+        self.update()
     
     def rename_pokemon(self, pokemon):
         name = self.get_new_nickname(pokemon)

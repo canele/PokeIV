@@ -65,6 +65,7 @@ def init_config():
     parser.add_argument("-ed", "--evolution_delay", help="delay between evolutions in seconds")
     parser.add_argument("-td", "--transfer_delay", help="delay between transfers in seconds")
     parser.add_argument("-rd", "--rename_delay", help="delay between renames in seconds")
+    parser.add_argument("-ud", "--upgrade_delay", help="delay between upgrades in seconds")
     parser.add_argument("-hm", "--hard_minimum", help="transfer candidates will be selected if they are below minimumIV (will transfer unique pokemon)", action="store_true")
     parser.add_argument("-cp", "--cp_override", help="will keep pokemon that have CP equal to or above the given limit, regardless of IV")
     parser.add_argument("-v", "--verbose", help="displays additional information about each pokemon", action="store_true")

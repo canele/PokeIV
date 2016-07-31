@@ -17,6 +17,8 @@
   
   "rename_delay": "5", 			"_comment": "delay between renames in seconds",
   
+  "upgrade_delay": "5", 		"_comment": "delay between upgrades in seconds",
+  
   "cp_override": "",  			"_comment": "will keep pokemon that have CP equal to or above the given limit, regardless of IV",
   
   "verbose": "True", 			"_comment": "displays additional information about each pokemon",
