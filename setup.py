@@ -26,7 +26,15 @@ for folder,folder_name,files in os.walk(path):
         if file == 'cacert.pem':
             mydata.append((folder[root_end:], [os.path.join(folder,file)]))
 
-mydata.extend(('names.tsv','families.tsv','evolves.tsv','config.json'))
+
+path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'pgoapi')
+root_end = 'pgoapi'
+for folder,folder_name,files in os.walk(path):
+    for file in files:
+        if os.path.splitext(file)[1] == '.json':
+            mydata.append((root_end, [os.path.join(folder,file)]))
+
+mydata.extend(('families.tsv','evolves.tsv','config.json'))
 
 setup(data_files=mydata,
       windows = [{'script': "pokeIV-gui.py"}],
