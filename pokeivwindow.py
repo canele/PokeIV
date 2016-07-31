@@ -3,7 +3,7 @@
 from tkinter import ttk
 import tkinter as tk
 import threading
-from multiprocessing import Queue
+import multiprocessing
 
 class PokeIVWindow(tk.Canvas):
     def __init__(self, config, data, master=None):
@@ -68,7 +68,7 @@ class PokeIVWindow(tk.Canvas):
                 self.config["password"] = password.get()
                 self.config["username"] = username.get()
                 self.config["auth_service"] = auth.get()
-                threading.Thread(target=self.relog).start()
+                self.relog()
         
         # auth/google radiobuttons
         buttons = tk.Frame(login_frame)
@@ -338,7 +338,7 @@ class PokeIVWindow(tk.Canvas):
         for p in pokemon:
             info = self.get_info(p)
             if any(e.id == p.id for e in self.evolve_list) or any(e.id == p.id for e in self.transfer_list) or any(e.id == p.id for e in self.rename_list) or (self.upgrade_item and self.upgrade_item.id == p.id):
-                tree.insert('', 'end', text=info[0], values=list(info[1:]) + [p.id], tags=('working',))
+                tree.insert('', 'end', text=info[0], values=list(info[1:]) + [p.id], tags=('working'))
             else:
                 tree.insert('', 'end', text=info[0], values=list(info[1:]) + [p.id])
         
@@ -544,7 +544,7 @@ class PokeIVWindow(tk.Canvas):
     def transfer_pokemon(self):
         if self.transfer_list:
             p = self.transfer_list.pop(0)
-            self.log_info('{0:<35} {1:<8} {2:<8.2%}'.format('transferring pokemon: '+str(p.name),str(p.cp),p.ivPercent,), "working")
+            self.log_info('{0:<35} {1:<8} {2:<8.2%}'.format('transferring pokemon: '+str(p.name),str(p.cp),p.ivPercent), "working")
             self.disable_action_buttons()
             self.transfer_ids.append(self.transfer_button.after(int(self.config["transfer_delay"])*1000, lambda: self.transfer(p)))
         else:
@@ -679,8 +679,29 @@ class PokeIVWindow(tk.Canvas):
         self.enable_all_buttons()
     
     def relog(self):
+        queue = multiprocessing.Queue()
+        Threaded(queue, self.login).start()
+        self.after(200, lambda: self.check_login(queue))
+    
+    def check_login(self, queue):
+        try:
+            status = queue.get(0)
+            self.update_display()
+        except multiprocessing.queues.Empty:
+            self.after(200, lambda: self.check_login(queue))
+    
+    def login(self):
         self.disable_all_buttons()
         self.data["config"] = self.config
         self.data.login()
-        self.update_display()
         self.enable_all_buttons()
+
+class Threaded(threading.Thread):
+    def __init__(self, queue, f):
+        threading.Thread.__init__(self)
+        self.queue = queue
+        self.func = f
+        
+    def run(self):
+        self.func()
+        self.queue.put("Logged in")
