@@ -21,7 +21,12 @@ from pokemondata import PokemonData
 from pokeivwindow import PokeIVWindow
 
 # add directory of this file to PATH, so that the package will be found
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
+try:
+    root = os.path.dirname(os.path.realpath(__file__))
+except NameError:
+    root = os.path.dirname(os.path.realpath(sys.argv[0]))
+    
+sys.path.append(os.path.dirname(root))
 
 # import Pokemon Go API lib
 from pgoapi import pgoapi
@@ -193,9 +198,14 @@ def main():
     api = pgoapi.PGoApi()
     
     # -- dictionaries for pokedex, families, and evolution prices
-    with open('names.tsv') as f:
-        f.readline()
-        pokedex = dict(csv.reader(f, delimiter='\t'))
+    with open(os.path.join(root, 'pgoapi/pokemon.json')) as f:
+        pokemonInfo = json.load(f)
+        
+    with open(os.path.join(root, 'pgoapi/moves.json')) as f:
+        moveInfo = json.load(f)
+        
+    with open(os.path.join(root, 'pgoapi/types.json')) as f:
+        types = json.load(f)
         
     with open('families.tsv') as f:
         f.readline()
@@ -204,8 +214,14 @@ def main():
     with open('evolves.tsv') as f:
         f.readline()
         cost = dict(csv.reader(f, delimiter='\t'))
+        
+    pokedex = dict([(int(p["Number"]),p["Name"]) for p in pokemonInfo])
+    moves = dict([(int(m["id"]),{"type":m["type"],"name":m["name"]}) for m in moveInfo])
     
-    data = PokemonData(pokedex, family, cost, config, api, login=True)
+    # instantiate pgoapi
+    api = pgoapi.PGoApi()
+    
+    data = PokemonData(pokedex, moves, types, family, cost, config, api, login=True)
     
     if len(data["all"]) == 0:
         print('You have no pokemon...')
@@ -219,11 +235,7 @@ def main():
     if data["transfer"]:
         print_header('May be transfered')
         print_pokemon(data["transfer"], data["config"]["verbose"])
-    #------- extras that aren't to be transfered
-    if data["other"]:
-        print_header('Other Pokemon')
-        print_pokemon(data["other"], data["config"]["verbose"])
-    #------- evolve candidate  pokemon
+    #------- evolve candidate pokemon
     if data["evolve"]:
         print_evolve_candidates(data)
     #------- transfer extra pokemon
