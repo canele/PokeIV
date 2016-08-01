@@ -149,9 +149,9 @@ def print_evolve_candidates(data):
         print('{0:<10} {1:<15} {2:<17} {3:>10}'.format('[pokemon]','[# evolutions]','[# in inventory]','[# needed]'))
         for id in list(data["evolve_counts"].keys()):
             if id in data["needed_counts"] and id in data["unique_counts"] and data["needed_counts"][id] <= 0:
-                print('{0:<10} {1:^15} {2:^17} {3:^10}'.format(data["pokedex"][id],data["evolve_counts"][id],data["unique_counts"][id],""))
+                print('{0:<10} {1:^15} {2:^17} {3:^10}'.format(data["pokedex"][int(id)],data["evolve_counts"][id],data["unique_counts"][id],""))
             elif id in data["needed_counts"] and id in data["unique_counts"]:
-                print('{0:<10} {1:^15} {2:^17} {3:^10}'.format(data["pokedex"][id],data["evolve_counts"][id],data["unique_counts"][id],data["needed_counts"][id]))
+                print('{0:<10} {1:^15} {2:^17} {3:^10}'.format(data["pokedex"][int(id)],data["evolve_counts"][id],data["unique_counts"][id],data["needed_counts"][id]))
 
 def transfer_pokemon(data):
     if data["config"]["transfer"] and data["transfer"]:
