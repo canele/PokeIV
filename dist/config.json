@@ -37,6 +37,7 @@
 												"_comment":"example: 13 atk, 13 def, 14 sta, 88.8888.. iv with default format becomes ==> '13-13-14-88.88' ",
 												"_comment":"{pokemon} is also a vailable and will display the type of pokemon.",
 												"_comment":"Name limits are 12 characters in length and WILL be truncated to fit--look at the action bar at the bottom of the UI",
+												"_comment":"Static strings can also be used in the brackets: {-}{\"IV\"}{iv.2} would produce IV-88.88 for above",
 	
   "equation": "({atk}+{def}+{sta})/45", 	"_comment": "The algorithm used to calculate IV.",
 											"_comment": "If you want to change it, make sure that once the items are replaced with numbers they form a valid equation",
