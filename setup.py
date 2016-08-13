@@ -34,7 +34,7 @@ for folder,folder_name,files in os.walk(path):
         if os.path.splitext(file)[1] == '.json':
             mydata.append((root_end, [os.path.join(folder,file)]))
 
-mydata.extend(('families.tsv','evolves.tsv','config.json'))
+mydata.extend(('families.tsv','evolves.tsv','german-names.tsv','config.json'))
 
 setup(data_files=mydata,
       windows = [{'script': "pokeIV-gui.py"}],
