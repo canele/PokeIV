@@ -27,3 +27,6 @@ Requires Python 2/3
 pip install -r requirements.txt
 ```
 
+# Screenshot
+![pokeIV screen shot](./screenshot.jpg "Screenshot")
+
