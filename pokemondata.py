@@ -222,7 +222,7 @@ class PokemonData(dict):
             
     def set_evolve_counts(self):
         self["evolve_counts"] = dict()
-        total = 0
+        self["evolve_counts"]["total"] = 0
 
         for p in self["all"]:
             if self.black_listed(p) or not self.white_listed(p):
@@ -230,8 +230,7 @@ class PokemonData(dict):
             if str(p.number) == str(p.family) and str(p.number) not in self["evolve_counts"] and hasattr(p,'cost'):
                 if int(p.candy/p.cost) > 0:
                     self["evolve_counts"][str(p.number)] = int(p.candy/p.cost)
-                    total += int(p.candy/p.cost)
-        self["evolve_counts"]["total"] = total
+                    self["evolve_counts"]["total"] = self["evolve_counts"]["total"] + int(p.candy/p.cost)
 
     def set_needed_counts(self):
         self["needed_counts"] = dict()
@@ -272,9 +271,11 @@ class PokemonData(dict):
             return None
         vals = []
         for item in items[1:]:
+            if re.match('".*"', item):
+                vals.append(re.search('"(.*)"', item).group(1))
             if item == "pokemon":
                 vals.append(str(pokemon.name))
-            if item == "atk":
+            elif item == "atk":
                 vals.append(str(pokemon.attack))
             elif item == "def":
                 vals.append(str(pokemon.defense))
