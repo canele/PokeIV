@@ -153,7 +153,7 @@ def start(config, login=False):
     pokedex = dict([(int(p["Number"]),p["Name"]) for p in pokemonInfo])
     moves = dict([(int(m["id"]),{"type":m["type"],"name":m["name"]}) for m in moveInfo])
     
-    # -- change language if selected --
+    # -- change language if selected -->
     if config["language"] is not None and config["language"].lower() == 'german':
         for k,v in pokedex.items():
             pokedex[k] = german[str(k)];

@@ -432,12 +432,14 @@ class PokeIVWindow(tk.Canvas):
             name = str(pokemon.nickname)
         else:
             name = str(pokemon.name)
-        return (name,str(pokemon.attack),str(pokemon.defense),str(pokemon.stamina),str(pokemon.move_1),str(pokemon.move_2),str(pokemon.cp),str('{0:>2.2%}').format(pokemon.ivPercent))
+        return (name,str(pokemon.attack),str(pokemon.defense),str(pokemon.stamina),
+                     str(pokemon.move_1),str(pokemon.move_2),str(pokemon.candy),
+                     str(pokemon.level),str(pokemon.cp),str('{0:>2.2%}').format(pokemon.ivPercent))
         
     def get_columns(self):
-        return {'verbose': ('POKEMON','ATK','DEF','STA','MOVE 1', 'MOVE 2', 'CP','IV'),
+        return {'verbose': ('POKEMON','ATK','DEF','STA','MOVE 1', 'MOVE 2', 'CANDY', 'LVL', 'CP', 'IV'),
                 'min': ('POKEMON','CP','IV'),
-                'width': (100,30,30,30,100,100,60,60)}
+                'width': (100,30,30,30,100,100,60,30,60,60)}
                     
     def log_info(self, text, level=None):
         self.logText.set(text)
