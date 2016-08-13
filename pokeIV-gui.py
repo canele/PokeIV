@@ -76,6 +76,7 @@ def init_config():
     parser.add_argument("-rf", "--rename_format", help="The pokemon renaming format. See config comments")
     parser.add_argument("-eq", "--equation", help="Equation to use for IV calculation--see config file for details")
     parser.add_argument("-dn", "--display_nickname", help="Display nicknames instead of pokemon type", action="store_true")
+    parser.add_argument("-l", "--language", help="Pokemon names are displayed in the given language. German and English currently supported")
     config = parser.parse_args()
     
     for key in config.__dict__:
@@ -136,6 +137,10 @@ def start(config, login=False):
         
     with open(os.path.normpath(os.path.join(root, 'pgoapi','types.json'))) as f:
         types = json.load(f)
+    
+    with open('german-names.tsv') as f:
+        f.readline()
+        german = dict(csv.reader(f, delimiter='\t'))    
         
     with open('families.tsv') as f:
         f.readline()
@@ -147,6 +152,12 @@ def start(config, login=False):
         
     pokedex = dict([(int(p["Number"]),p["Name"]) for p in pokemonInfo])
     moves = dict([(int(m["id"]),{"type":m["type"],"name":m["name"]}) for m in moveInfo])
+    
+    # -- change language if selected --
+    if config["language"] is not None and config["language"].lower() == 'german':
+        for k,v in pokedex.items():
+            pokedex[k] = german[str(k)];
+            
     
     # instantiate pgoapi
     api = pgoapi.PGoApi()
