@@ -170,7 +170,6 @@ class PokemonData(dict):
         for node in self.find_node("pokemon_data", inventory):
             if 'is_egg' not in node:
                 _add_pokemon(node)
-                print(node)
         for node in self.find_node("inventory_item_data", inventory):
             _add_candy(node)
             
