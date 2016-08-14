@@ -64,7 +64,9 @@ class PokeIVWindow(tk.Canvas):
         
         # try to log in if values are set
         def _log_in():
-            if password.get() and username.get():
+            if self.config["location"] is None:
+                self.log_info("Please set your location before trying to log in.")
+            elif password.get() and username.get():
                 self.config["password"] = password.get()
                 self.config["username"] = username.get()
                 self.config["auth_service"] = auth.get()

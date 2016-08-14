@@ -60,6 +60,7 @@ def init_config():
     parser.add_argument("-a", "--auth_service", help="Auth Service ('ptc' or 'google')")
     parser.add_argument("-u", "--username", help="Username")
     parser.add_argument("-p", "--password", help="Password")
+    parser.add_argument("-l", "--location", help="Physical location of your character")
     parser.add_argument("-m", "--minimumIV", help="All pokemon equal to or above this IV value are kept regardless of duplicates")
     parser.add_argument("-me", "--max_evolutions", help="Maximum number of evolutions in one pass")
     parser.add_argument("-ed", "--evolution_delay", help="delay between evolutions in seconds")
@@ -76,7 +77,7 @@ def init_config():
     parser.add_argument("-rf", "--rename_format", help="The pokemon renaming format. See config comments")
     parser.add_argument("-eq", "--equation", help="Equation to use for IV calculation--see config file for details")
     parser.add_argument("-dn", "--display_nickname", help="Display nicknames instead of pokemon type", action="store_true")
-    parser.add_argument("-l", "--language", help="Pokemon names are displayed in the given language. German and English currently supported")
+    parser.add_argument("-la", "--language", help="Pokemon names are displayed in the given language. German and English currently supported")
     config = parser.parse_args()
     
     for key in config.__dict__:
@@ -122,7 +123,7 @@ def main():
     if not config:
         return
         
-    if config["password"] is None or config["username"] is None or config["auth_service"] not in ['ptc', 'google']:
+    if config["password"] is None or config["username"] is None or config["auth_service"] not in ['ptc', 'google'] or config["location"] is None:
         start(config)
     else:
         start(config, login=True)

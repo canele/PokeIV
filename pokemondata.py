@@ -5,6 +5,10 @@ import json
 import time
 from ast import literal_eval
 
+# import Pokemon Go API lib
+from pgoapi import pgoapi
+from pgoapi import utilities as util
+
 class PokemonData(dict):   
     #A dictionary for all of the key information used in pokeIV
     def __init__(self, pokedex, moves, types, family, cost, config, api, login=False):
@@ -54,11 +58,12 @@ class PokemonData(dict):
         self["transfer"] = sorted(list(set(self["all"]) - set(self["best"]) - set(self["evolve"])), key=lambda x: x.iv)
         
     def update_player_and_inventory(self):
+        req = self["api"].create_request()
         # add inventory to rpc call
-        self["api"].get_inventory()
+        req.get_inventory()
         # add player to rpc call
-        self["api"].get_player()
-        response = self["api"].call()
+        req.get_player()
+        response = req.call()
         self["player"] = self.parse_player(response)
         items = self.parse_inventory(response)
         self["candy"] = items["candy"]
@@ -323,11 +328,21 @@ class PokemonData(dict):
         self.update()
         
     def login(self):
+        if self["config"]["location"] is None:
+            print("Required location not provided")
+            return
+        #set location
+        position = util.get_pos_by_name(self["config"]["location"])
+        if not position:
+            print("Invalid location")
+            return
+        self["api"].set_position(*position)
         # login
-        if not self["api"].login(self["config"]["auth_service"], self["config"]["username"], self["config"]["password"]):
+        if not self["api"].login(self["config"]["auth_service"], self["config"]["username"], self["config"]["password"], app_simulation = True):
             print("error logging in...")
-        self.update_player_and_inventory()
-        self.init_info()
+        else:
+            self.update_player_and_inventory()
+            self.init_info()
         
     def update(self):
         self.update_player_and_inventory()
