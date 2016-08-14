@@ -31,6 +31,21 @@ class NotLoggedInException(Exception):
 
 class ServerBusyOrOfflineException(Exception):
     pass
-    
+
 class PleaseInstallProtobufVersion3(Exception):
+    pass
+
+class NoPlayerPositionSetException(Exception):
+    pass
+    
+class EmptySubrequestChainException(Exception):
+    pass
+    
+class ServerSideRequestThrottlingException(Exception):
+    pass
+
+class ServerSideAccessForbiddenException(Exception):
+    pass
+
+class UnexpectedResponseException(Exception):
     pass
