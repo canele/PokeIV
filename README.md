@@ -22,6 +22,12 @@ There is now an executable distribution of PokeIV located in the 'dist' director
 
 # Linux / other
 Requires Python 2/3
+
+E.g. in Ubuntu run:
+```bash
+sudo apt-get install python python-tk
+```
+
 ### Installation
 ```
 pip install -r requirements.txt
