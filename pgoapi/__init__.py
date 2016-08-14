@@ -44,8 +44,8 @@ try:
 except:
     pass
 
-if (not protobuf_exist) or (int(protobuf_version[:1]) < 3):
-    raise PleaseInstallProtobufVersion3()
+#if (not protobuf_exist) or (int(protobuf_version[:1]) < 3):
+    #raise PleaseInstallProtobufVersion3()
 
 from pgoapi.pgoapi import PGoApi
 from pgoapi.rpc_api import RpcApi

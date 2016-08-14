@@ -5,6 +5,10 @@
   
   "password": "",
   
+  "location": "",               "_comment": "Physical location that your character will be logged in from", 
+  
+  "language": "",               "_comment": "Language used for pokemon names. Default is English. German is the only other language currently supported",
+  
   "minimumIV": "80",  			"_comment": "IV percentage--everything above is kept regardless of duplication",
   
   "hard_minimum": "False", 		"_comment": "transfer candidates will be selected if they are below minimumIV (will transfer unique pokemon)",
