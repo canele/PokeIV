@@ -429,9 +429,9 @@ class PokeIVWindow(tk.Canvas):
         
     def get_info(self,pokemon):
         if self.config["display_nickname"]:
-            name = str(pokemon.nickname)
+            name = pokemon.nickname
         else:
-            name = str(pokemon.name)
+            name = pokemon.name
         return (name,str(pokemon.attack),str(pokemon.defense),str(pokemon.stamina),
                      str(pokemon.move_1),str(pokemon.move_2),str(pokemon.candy),
                      str(pokemon.level),str(pokemon.cp),str('{0:>2.2%}').format(pokemon.ivPercent))
