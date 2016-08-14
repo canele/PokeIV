@@ -28,6 +28,7 @@ class PokemonData(dict):
         self["evolve_counts"] = dict()
         self["needed_counts"] = dict()
         self["unique_counts"] = dict()
+        self["request"] = None
         if login:
             #updates inventory and player info
             self.login()
@@ -56,18 +57,29 @@ class PokemonData(dict):
         self.set_evolve()
         #anything that's not in best or evolve should be transferred
         self["transfer"] = sorted(list(set(self["all"]) - set(self["best"]) - set(self["evolve"])), key=lambda x: x.iv)
+    
+    def get_request(self):
+        if self["request"] is None:
+            self["request"] = self["api"].create_request()
+        return self["request"]
         
+    def call_request(self):
+        if self["request"] is not None:
+            return self["request"].call()
+        else:
+            return None
+    
     def update_player_and_inventory(self):
-        req = self["api"].create_request()
         # add inventory to rpc call
-        req.get_inventory()
+        self.get_request().get_inventory()
         # add player to rpc call
-        req.get_player()
-        response = req.call()
-        self["player"] = self.parse_player(response)
-        items = self.parse_inventory(response)
-        self["candy"] = items["candy"]
-        self["all"] = items["pokemon"]
+        self.get_request().get_player()
+        response = self.call_request()
+        if response is not None:
+            self["player"] = self.parse_player(response)
+            items = self.parse_inventory(response)
+            self["candy"] = items["candy"]
+            self["all"] = items["pokemon"]
     
     def update_inventory(self):
         items = self.parse_inventory(self.get_inventory())
@@ -307,24 +319,20 @@ class PokemonData(dict):
         return  str(items[0]).join(vals)[:12]  
     
     def transfer_pokemon(self, pokemon):
-        self["api"].release_pokemon(pokemon_id=self.get_id(pokemon))
-        #self["api"].call()
+        self.get_request().release_pokemon(pokemon_id=self.get_id(pokemon))
         self.update()
 
     def evolve_pokemon(self, pokemon):
-        self["api"].evolve_pokemon(pokemon_id=self.get_id(pokemon))
-        #self["api"].call()
+        self.get_request().evolve_pokemon(pokemon_id=self.get_id(pokemon))
         self.update()
         
     def upgrade_pokemon(self, pokemon):
-        self["api"].upgrade_pokemon(pokemon_id=self.get_id(pokemon))
-        #self["api"].call()
+        self.get_request().upgrade_pokemon(pokemon_id=self.get_id(pokemon))
         self.update()
     
     def rename_pokemon(self, pokemon):
         name = self.get_new_nickname(pokemon)
-        self["api"].nickname_pokemon(pokemon_id=self.get_id(pokemon),nickname=str(name))
-        #self["api"].call()
+        self.get_request().nickname_pokemon(pokemon_id=self.get_id(pokemon),nickname=str(name))
         self.update()
         
     def login(self):
